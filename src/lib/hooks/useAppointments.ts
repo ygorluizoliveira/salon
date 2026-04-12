@@ -284,9 +284,29 @@ export function useAppointmentsForMonth(monthIso: string) {
 export function useAllClients() {
   const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
   useEffect(() => {
-    supabase.from('clients').select('id, name').order('name').then(({ data }) => {
+    let cancelled = false;
+
+    async function loadClients() {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('id, name')
+        .order('name');
+
+      if (cancelled) return;
+      if (error) {
+        console.error('[useAllClients] failed to load clients:', error.message);
+        setClients([]);
+        return;
+      }
       setClients(data ?? []);
-    });
+    }
+
+    loadClients();
+    window.addEventListener('clients-changed', loadClients);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('clients-changed', loadClients);
+    };
   }, []);
   return clients;
 }
