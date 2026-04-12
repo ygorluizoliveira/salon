@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Noto Serif", serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --color-primary: #68597a;
+  --color-primary-container: #e1cdf4;
+  --color-on-primary-container: #524362;
+  
+  --color-secondary: #745c00;
+  --color-secondary-container: #ffe088;
+  --color-on-secondary-container: #644f00;
+  
+  --color-tertiary: #3d6668;
+  --color-tertiary-container: #d0fcfe;
+  --color-on-tertiary-container: #3a6264;
+
+  --color-surface: #fef7fe;
+  --color-surface-container-low: #f9f1fa;
+  --color-surface-container-highest: #e8e0ec;
+  --color-surface-container-high: #eee6f0;
+  --color-surface-variant: #e8e0ec;
+  
+  --color-on-surface: #35313a;
+  --color-on-surface-variant: #625d67;
+  
+  --color-outline-variant: #b7afbb;
+  --color-error: #a8364b;
+  --color-error-container: #f97386;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-on-surface font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+
+  /*
+   * Default flex direction for React Native View components.
+   * Defined in @layer base so Tailwind utility classes (flex-row, flex-col, etc.)
+   * always win over this default — inline styles in the shim are intentionally
+   * not used for this property so the override chain works correctly.
+   */
+  .rn-view {
+    flex-direction: column;
+    min-height: 0; /* fix: permite que flex-children encolham e o ScrollView role */
+  }
+}
+
+.glass {
+  @apply bg-surface/70 backdrop-blur-xl;
+}
+
+.gradient-primary {
+  @apply bg-gradient-to-tr from-[#68597a] to-[#e1cdf4];
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
