@@ -58,7 +58,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signOut() {
-    await supabase.auth.signOut();
+    try {
+      // Local sign-out avoids relying on /auth/v1/logout when network/proxy resets requests.
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      // Fallback to default behavior if local scope is not available for any reason.
+      await supabase.auth.signOut();
+    }
   }
 
   async function resetPassword(email: string): Promise<string | null> {
