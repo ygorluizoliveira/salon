@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
+import { todayLocalISO, toLocalISODate } from '../utils';
 
 interface DashboardStats {
   dailyRevenue: number;
@@ -33,9 +34,9 @@ export function useDashboardStats() {
       setLoading(true);
       setError(null);
 
-      const today     = new Date().toISOString().split('T')[0];
-      const yesterday = new Date(Date.now() - 86_400_000).toISOString().split('T')[0];
-      const weekAgo   = new Date(Date.now() - 7 * 86_400_000).toISOString().split('T')[0];
+      const today     = todayLocalISO();
+      const yesterday = toLocalISODate(new Date(Date.now() - 86_400_000));
+      const weekAgo   = toLocalISODate(new Date(Date.now() - 7 * 86_400_000));
 
       // Daily capacity: maximum appointments per day (configurable)
       const DAILY_CAPACITY = 10;

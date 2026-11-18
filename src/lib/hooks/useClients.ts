@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
+import { todayLocalISO } from '../utils';
 import type { Client } from '../types';
 
 const CLIENTS_CACHE_KEY = 'clients-cache-v1';
@@ -286,7 +287,7 @@ export async function addClient(fields: { name: string; phone?: string | null; e
       phone: fields.phone ?? null,
       email: fields.email ?? null,
       status: 'Novo' as const,
-      member_since: new Date().toISOString().split('T')[0],
+      member_since: todayLocalISO(),
     })
     .select('id, name')
     .single();

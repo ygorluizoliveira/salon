@@ -6,6 +6,7 @@ import { useAuth } from '../lib/AuthContext';
 import { usePendingAppointments, updateAppointmentStatus } from '../lib/hooks/useAppointments';
 import { useSalonSettings } from '../lib/hooks/useSalonSettings';
 import { navigationRef } from '../lib/navigationRef';
+import { formatTime } from '../lib/utils';
 
 interface TopBarProps {
   onBack?: () => void;
@@ -169,7 +170,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onBack, title }) => {
                         {apt.client?.name ?? '—'}
                       </Text>
                       <Text style={{ fontSize: 12, color: '#625d67', marginTop: 2 }}>
-                        {formatDate(apt.date)} às {apt.time_start}
+                        {formatDate(apt.date)} às {formatTime(apt.time_start)}
                       </Text>
                       <Text style={{ fontSize: 11, color: '#68597a', marginTop: 1 }} numberOfLines={1}>
                         {apt.service}

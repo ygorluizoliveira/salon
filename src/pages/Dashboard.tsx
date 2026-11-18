@@ -11,6 +11,7 @@ import { useDashboardStats } from '../lib/hooks/useDashboardStats';
 import { useServiceCategories } from '../lib/hooks/useServiceCategories';
 import { useClients } from '../lib/hooks/useClients';
 import type { Appointment } from '../lib/types';
+import { formatTime } from '../lib/utils';
 
 // Maps an appointment status to its Tailwind colour classes
 const STATUS_COLORS: Record<string, string> = {
@@ -20,6 +21,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const MIN_CANCEL_DAYS = 5;
+const MIN_BOOK_DAYS = 5;
 
 function formatBRL(value: number) {
   return value.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -110,8 +112,8 @@ export const Dashboard: React.FC = () => {
     setEditApt(apt);
     setEditServices(apt.service ? apt.service.split(', ') : []);
     setEditDate(apt.date);
-    setEditTimeStart(apt.time_start);
-    setEditTimeEnd(apt.time_end);
+    setEditTimeStart(formatTime(apt.time_start));
+    setEditTimeEnd(formatTime(apt.time_end));
     setEditStatus(apt.status);
     setEditPrice(apt.price != null ? String(apt.price) : '');
   }
@@ -233,19 +235,18 @@ export const Dashboard: React.FC = () => {
             {appointments.map((apt: Appointment) => {
               const colorClass = STATUS_COLORS[apt.status] ?? STATUS_COLORS.Aguardando;
               const [bgColor, textColor] = colorClass.split(' ');
-              const timeLabel = `${apt.time_start} - ${apt.time_end}`;
+              const timeLabel = `${formatTime(apt.time_start)} - ${formatTime(apt.time_end)}`;
               const dateLabel = new Date(apt.date + 'T12:00:00').toLocaleDateString('pt-BR', {
                 weekday: 'short',
                 day: '2-digit',
                 month: '2-digit',
               });
               return (
-                <TouchableOpacity
+                <View
                   key={apt.id}
-                  onPress={() => openEdit(apt)}
                   className="bg-[#f9f1fa] rounded-2xl p-4 flex-row items-center justify-between mb-4"
                 >
-                  <View className="flex-row items-center flex-1">
+                  <TouchableOpacity onPress={() => openEdit(apt)} className="flex-row items-center flex-1">
                     {apt.client?.avatar_url ? (
                       <Image
                         source={{ uri: apt.client.avatar_url }}
@@ -270,7 +271,7 @@ export const Dashboard: React.FC = () => {
                         </Text>
                       )}
                     </View>
-                  </View>
+                  </TouchableOpacity>
                   <View className="items-end">
                     <View className={`px-3 py-1 rounded-full ${bgColor}`}>
                       <Text className={`text-[8px] font-bold uppercase tracking-wider ${textColor}`}>
@@ -285,7 +286,7 @@ export const Dashboard: React.FC = () => {
                           const dateFormatted = new Date(apt.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
                           const msg = encodeURIComponent(
                             `Olá ${apt.client!.name}! 💜 Lembrando do seu agendamento no ${salonName}:\n` +
-                            `📅 ${dateFormatted} às ${apt.time_start}\n` +
+                            `📅 ${dateFormatted} às ${formatTime(apt.time_start)}\n` +
                             `✂️ ${apt.service}\n\nQualquer dúvida, estamos à disposição!`
                           );
                           window.open(`https://wa.me/${waNumber}?text=${msg}`, '_blank');
@@ -307,11 +308,15 @@ export const Dashboard: React.FC = () => {
                         <MessageCircle size={14} color="#625d67" />
                       </TouchableOpacity>
                     )}
-                    <TouchableOpacity onPress={(e) => { (e as any).stopPropagation?.(); setActionApt(apt); }} className="mt-2">
+                    <TouchableOpacity
+                      onPress={() => setActionApt(apt)}
+                      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                      className="mt-2"
+                    >
                       <MoreVertical size={20} color="#625d67" />
                     </TouchableOpacity>
                   </View>
-                </TouchableOpacity>
+                </View>
               );
             })}
           </View>
@@ -352,7 +357,7 @@ export const Dashboard: React.FC = () => {
           />
           <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#fef7fe', borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 32 }}>
             <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#35313a', marginBottom: 4 }}>{actionApt?.client?.name}</Text>
-            <Text style={{ fontSize: 12, color: '#625d67', marginBottom: 24 }}>{actionApt?.service} • {actionApt?.time_start} – {actionApt?.time_end}</Text>
+            <Text style={{ fontSize: 12, color: '#625d67', marginBottom: 24 }}>{actionApt?.service} • {formatTime(actionApt?.time_start)} – {formatTime(actionApt?.time_end)}</Text>
 
             <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12 }}>Alterar status</Text>
             {(['Aguardando', 'Confirmado', 'Cancelado'] as const).map(s => (

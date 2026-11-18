@@ -1,5 +1,6 @@
 import React from 'react';
 import { usePromotions } from '../lib/hooks/usePromotions';
+import { parseLocalDate, todayLocalISO } from '../lib/utils';
 import { useSalonSettings } from '../lib/hooks/useSalonSettings';
 
 export function ClientPromotions() {
@@ -8,7 +9,7 @@ export function ClientPromotions() {
 
   const active = promotions.filter(p => {
     if (!p.active) return false;
-    if (p.valid_until && new Date(p.valid_until) < new Date()) return false;
+    if (p.valid_until && p.valid_until < todayLocalISO()) return false;
     return true;
   });
 
@@ -53,7 +54,7 @@ export function ClientPromotions() {
             )}
             {promo.valid_until && (
               <p style={{ color: '#b7afbb', fontSize: 11, margin: 0 }}>
-                📅 Válida até {new Date(promo.valid_until).toLocaleDateString('pt-BR')}
+                📅 Válida até {parseLocalDate(promo.valid_until).toLocaleDateString('pt-BR')}
               </p>
             )}
           </div>

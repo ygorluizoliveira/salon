@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -87,10 +88,38 @@ function MainTabs() {
   );
 }
 
+function NotAdminScreen() {
+  const { signOut } = useAuth();
+  useEffect(() => {
+    const t = setTimeout(() => window.location.replace('/cliente'), 4000);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <View style={{ flex: 1, backgroundColor: '#fef7fe', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+      <Text style={{ fontSize: 22, fontWeight: '700', color: '#68597a', textAlign: 'center', marginBottom: 12 }}>
+        Acesso restrito
+      </Text>
+      <Text style={{ color: '#625d67', fontSize: 14, textAlign: 'center', maxWidth: 360, marginBottom: 24 }}>
+        Esta área é exclusiva para a gestão do salão. Você será redirecionado para a Área do Cliente.
+      </Text>
+      <TouchableOpacity
+        onPress={() => window.location.replace('/cliente')}
+        style={{ backgroundColor: '#68597a', borderRadius: 50, paddingVertical: 14, paddingHorizontal: 28, marginBottom: 12 }}
+      >
+        <Text style={{ color: '#fff', fontWeight: '700' }}>Ir para a Área do Cliente</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => { signOut(); }}>
+        <Text style={{ color: '#68597a', fontWeight: '600' }}>Sair</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 function AuthGate() {
   const { session, loading } = useAuth();
   if (loading) return null;
   if (!session) return <LoginScreen />;
+  if (session.user.app_metadata?.role !== 'admin') return <NotAdminScreen />;
 
   const linking = {
     prefixes: [],

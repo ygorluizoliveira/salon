@@ -5,6 +5,7 @@ import { MotiView } from 'moti';
 import { TopBar } from '../components/TopBar';
 import { useTransactions } from '../lib/hooks/useTransactions';
 import type { Transaction } from '../lib/types';
+import { todayLocalISO } from '../lib/utils';
 
 const CATEGORY_COLORS: string[] = ['#68597a', '#e1cdf4', '#ffe088', '#d0fcfe'];
 
@@ -25,11 +26,11 @@ export const Finance: React.FC = () => {
   const [fTitle, setFTitle]     = useState('');
   const [fAmount, setFAmount]   = useState('');
   const [fCategory, setFCategory] = useState('');
-  const [fDate, setFDate]       = useState(new Date().toISOString().split('T')[0]);
+  const [fDate, setFDate]       = useState(todayLocalISO());
   const [saving, setSaving]     = useState(false);
 
   function openForm() { setFormOpen(true); }
-  function closeForm() { setFormOpen(false); setFTitle(''); setFAmount(''); setFCategory(''); setFType('income'); setFDate(new Date().toISOString().split('T')[0]); }
+  function closeForm() { setFormOpen(false); setFTitle(''); setFAmount(''); setFCategory(''); setFType('income'); setFDate(todayLocalISO()); }
 
   async function handleSave() {
     if (!fTitle.trim()) { Alert.alert('Campo obrigatório', 'Informe o título.'); return; }
