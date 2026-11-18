@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
+import { maskPhone, isValidPhone, PHONE_ERROR, maskCnpj, maskCpf, isValidCnpj, isValidCpf, isValidEmail } from '../lib/utils';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Building2, PlusCircle, Trash2, Verified, Flower2, Package, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { MotiView } from 'moti';
@@ -10,6 +10,11 @@ import type { SupplierCategory, SupplierProductCategory } from '../lib/types';
 
 const CATEGORIES: SupplierCategory[] = ['Coloração', 'Cuidados', 'Equipamentos', 'Outros'];
 const PRODUCT_CATEGORIES: SupplierProductCategory[] = ['Coloração', 'Cuidados', 'Equipamentos', 'Higiene', 'Outros'];
+
+const LABEL = 'text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider';
+const INPUT = 'w-full h-14 bg-[#f9f1fa] border border-[#b7afbb66] rounded-2xl px-4 text-base text-[#35313a]';
+const INPUT_ERR = 'w-full h-14 bg-[#f9f1fa] border border-[#ba1a1a] rounded-2xl px-4 text-base text-[#35313a]';
+const ERR = 'text-xs text-[#ba1a1a] mt-1 ml-1';
 
 function formatDateBR(iso: string) {
   if (!iso) return '';
@@ -176,15 +181,19 @@ export const NewSupplier: React.FC = () => {
   const [phone, setPhone]             = useState('');
   const [saving, setSaving]           = useState(false);
 
+  const [errors, setErrors] = useState<{ name?: string; doc?: string; email?: string; phone?: string }>({});
+
   async function handleSave() {
-    if (!companyName.trim()) {
-      Alert.alert('Campo obrigatório', 'Por favor, informe o nome da empresa.');
-      return;
+    const errs: typeof errors = {};
+    if (!companyName.trim()) errs.name = 'Informe o nome da empresa.';
+    if (cnpj.trim()) {
+      const ok = docType === 'cnpj' ? isValidCnpj(cnpj) : isValidCpf(cnpj);
+      if (!ok) errs.doc = docType === 'cnpj' ? 'CNPJ inválido.' : 'CPF inválido.';
     }
-    if (phone.trim() && !isValidPhone(phone)) {
-      Alert.alert('Campo inválido', PHONE_ERROR);
-      return;
-    }
+    if (email.trim() && !isValidEmail(email)) errs.email = 'E-mail inválido.';
+    if (phone.trim() && !isValidPhone(phone)) errs.phone = PHONE_ERROR;
+    setErrors(errs);
+    if (Object.keys(errs).length) return;
     setSaving(true);
     try {
       await addSupplier({
@@ -218,107 +227,101 @@ export const NewSupplier: React.FC = () => {
           </View>
 
           {/* ── Form ────────────────────────────────────────────────────── */}
-          <View className="bg-[#e8e0ec] rounded-[32px] p-8 mb-8 shadow-sm">
-            {/* Identificação */}
-            <View className="mb-10">
-              <View className="flex-row items-center gap-2 mb-6">
-                <View className="w-8 h-[1px] bg-[#68597a4d]" />
-                <Text className="text-xl font-serif text-[#68597a] italic">Identificação</Text>
-              </View>
+          <View className="bg-[#e8e0ec] rounded-[32px] p-5 md:p-8 mb-8 shadow-sm w-full">
+            <View className="flex-row items-center gap-2 mb-5">
+              <View className="w-8 h-[1px] bg-[#68597a4d]" />
+              <Text className="text-xl font-serif text-[#68597a] italic">Identificação</Text>
+            </View>
 
-              <View className="mb-6">
-                <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Nome da Empresa *</Text>
-                <TextInput
-                  value={companyName}
-                  onChangeText={setCompanyName}
-                  placeholder="Ex: L'Oréal Professionnel"
-                  placeholderTextColor="#625d6766"
-                  className="bg-[#f9f1fa] rounded-2xl px-4 py-4 text-[#35313a]"
-                />
-              </View>
+            <View className="mb-5">
+              <Text className={LABEL}>Nome da Empresa *</Text>
+              <TextInput
+                value={companyName}
+                onChangeText={v => { setCompanyName(v); setErrors(e => ({ ...e, name: undefined })); }}
+                placeholder="Ex: L'Oréal Professionnel"
+                placeholderTextColor="#625d6780"
+                className={errors.name ? INPUT_ERR : INPUT}
+              />
+              {errors.name && <Text className={ERR}>{errors.name}</Text>}
+            </View>
 
-              <View className="flex-row gap-4 mb-6">
-                <View className="flex-1">
-                  {/* Toggle CNPJ / CPF */}
-                  <View className="flex-row bg-[#f9f1fa] rounded-xl p-1 mb-3">
-                    {(['cnpj', 'cpf'] as const).map(t => (
-                      <TouchableOpacity
-                        key={t}
-                        onPress={() => { setDocType(t); setCnpj(''); }}
-                        className={`flex-1 py-2 rounded-lg items-center ${
-                          docType === t ? 'bg-[#68597a]' : ''
-                        }`}
-                      >
-                        <Text className={`text-[10px] font-bold uppercase ${
-                          docType === t ? 'text-white' : 'text-[#625d67]'
-                        }`}>{t.toUpperCase()}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                  <TextInput
-                    value={cnpj}
-                    onChangeText={setCnpj}
-                    placeholder={docType === 'cnpj' ? '00.000.000/0000-00' : '000.000.000-00'}
-                    placeholderTextColor="#625d6766"
-                    className="bg-[#f9f1fa] rounded-2xl px-4 py-4 text-[#35313a]"
-                  />
-                </View>
-                <View className="flex-1">
-                  <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Categoria</Text>
-                  <View className="flex-row flex-wrap gap-2 mt-1">
-                    {CATEGORIES.map((cat) => (
-                      <TouchableOpacity
-                        key={cat}
-                        onPress={() => setCategory(cat)}
-                        className={`px-3 py-2 rounded-xl ${category === cat ? 'bg-[#68597a]' : 'bg-[#f9f1fa]'}`}
-                      >
-                        <Text className={`text-[10px] font-bold ${category === cat ? 'text-white' : 'text-[#625d67]'}`}>{cat}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
+            <View className="mb-5">
+              <Text className={LABEL}>Documento</Text>
+              <View className="flex-row bg-[#f9f1fa] rounded-2xl p-1 mb-3 border border-[#b7afbb66]">
+                {(['cnpj', 'cpf'] as const).map(t => (
+                  <TouchableOpacity
+                    key={t}
+                    onPress={() => { setDocType(t); setCnpj(''); setErrors(e => ({ ...e, doc: undefined })); }}
+                    className={`flex-1 h-10 rounded-xl items-center justify-center ${docType === t ? 'bg-[#68597a]' : ''}`}
+                  >
+                    <Text className={`text-xs font-bold uppercase ${docType === t ? 'text-white' : 'text-[#625d67]'}`}>{t.toUpperCase()}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <TextInput
+                value={cnpj}
+                onChangeText={v => { setCnpj(docType === 'cnpj' ? maskCnpj(v) : maskCpf(v)); setErrors(e => ({ ...e, doc: undefined })); }}
+                placeholder={docType === 'cnpj' ? '00.000.000/0000-00' : '000.000.000-00'}
+                placeholderTextColor="#625d6780"
+                inputMode="numeric"
+                className={errors.doc ? INPUT_ERR : INPUT}
+              />
+              {errors.doc && <Text className={ERR}>{errors.doc}</Text>}
+            </View>
+
+            <View className="mb-8">
+              <Text className={LABEL}>Categoria</Text>
+              <View className="flex-row flex-wrap gap-2">
+                {CATEGORIES.map((cat) => (
+                  <TouchableOpacity
+                    key={cat}
+                    onPress={() => setCategory(cat)}
+                    className={`px-4 h-10 rounded-xl items-center justify-center border ${category === cat ? 'bg-[#68597a] border-[#68597a]' : 'bg-[#f9f1fa] border-[#b7afbb66]'}`}
+                  >
+                    <Text className={`text-xs font-bold ${category === cat ? 'text-white' : 'text-[#625d67]'}`}>{cat}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
             </View>
 
-            {/* Contato */}
-            <View className="mb-10">
-              <View className="flex-row items-center gap-2 mb-6">
-                <View className="w-8 h-[1px] bg-[#68597a4d]" />
-                <Text className="text-xl font-serif text-[#68597a] italic">Contato Direto</Text>
-              </View>
+            <View className="flex-row items-center gap-2 mb-5">
+              <View className="w-8 h-[1px] bg-[#68597a4d]" />
+              <Text className="text-xl font-serif text-[#68597a] italic">Contato Direto</Text>
+            </View>
 
-              <View className="mb-6">
-                <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">E-mail Corporativo</Text>
-                <TextInput
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="contato@fornecedor.com.br"
-                  placeholderTextColor="#625d6766"
-                  className="bg-[#f9f1fa] rounded-2xl px-4 py-4 text-[#35313a]"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
+            <View className="mb-5">
+              <Text className={LABEL}>E-mail Corporativo</Text>
+              <TextInput
+                value={email}
+                onChangeText={v => { setEmail(v); setErrors(e => ({ ...e, email: undefined })); }}
+                placeholder="contato@fornecedor.com.br"
+                placeholderTextColor="#625d6780"
+                className={errors.email ? INPUT_ERR : INPUT}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+              {errors.email && <Text className={ERR}>{errors.email}</Text>}
+            </View>
 
-              <View className="mb-6">
-                <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Telefone / WhatsApp</Text>
-                <TextInput
-                  value={phone}
-                  onChangeText={v => setPhone(maskPhone(v))}
-                  placeholder="(11) 98765-4321"
-                  placeholderTextColor="#625d6766"
-                  className="bg-[#f9f1fa] rounded-2xl px-4 py-4 text-[#35313a]"
-                  keyboardType="phone-pad"
-                />
-              </View>
+            <View className="mb-8">
+              <Text className={LABEL}>Telefone / WhatsApp</Text>
+              <TextInput
+                value={phone}
+                onChangeText={v => { setPhone(maskPhone(v)); setErrors(e => ({ ...e, phone: undefined })); }}
+                placeholder="(11) 98765-4321"
+                placeholderTextColor="#625d6780"
+                className={errors.phone ? INPUT_ERR : INPUT}
+                inputMode="tel"
+              />
+              {errors.phone && <Text className={ERR}>{errors.phone}</Text>}
             </View>
 
             <TouchableOpacity
               onPress={handleSave}
               disabled={saving}
-              className={`py-5 rounded-full shadow-lg shadow-[#68597a4d] ${saving ? 'bg-[#68597a80]' : 'bg-[#68597a]'}`}
+              className={`h-14 rounded-full items-center justify-center shadow-lg shadow-[#68597a4d] ${saving ? 'bg-[#68597a80]' : 'bg-[#68597a]'}`}
             >
-              <Text className="text-white text-center font-bold text-lg">
+              <Text className="text-white text-center font-bold text-base">
                 {saving ? 'Salvando…' : 'Salvar Fornecedor'}
               </Text>
             </TouchableOpacity>

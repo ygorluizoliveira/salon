@@ -4,28 +4,9 @@ import { MotiView } from 'moti';
 import { Scissors, ArrowLeft } from 'lucide-react-native';
 import { useAuth } from '../lib/AuthContext';
 import { useSalonSettings } from '../lib/hooks/useSalonSettings';
+import { maskCpf, isValidCpf } from '../lib/utils';
 
 type Tab = 'login' | 'signup';
-
-function maskCpf(v: string) {
-  const d = v.replace(/\D/g, '').slice(0, 11);
-  if (d.length > 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
-  if (d.length > 6) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
-  if (d.length > 3) return `${d.slice(0, 3)}.${d.slice(3)}`;
-  return d;
-}
-
-function isValidCpf(v: string) {
-  const d = v.replace(/\D/g, '');
-  if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
-  for (const len of [9, 10]) {
-    let sum = 0;
-    for (let i = 0; i < len; i++) sum += Number(d[i]) * (len + 1 - i);
-    const dv = ((sum * 10) % 11) % 10;
-    if (dv !== Number(d[len])) return false;
-  }
-  return true;
-}
 
 export function LoginScreen() {
   const { signIn, signUp, resetPassword } = useAuth();

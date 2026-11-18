@@ -220,9 +220,10 @@ Image.displayName = 'Image';
 
 export const TextInput = React.forwardRef(({
   className, style, value, defaultValue, onChangeText, onChange, placeholder,
-  secureTextEntry, multiline, numberOfLines, editable = true, keyboardType, ...rest
+  secureTextEntry, multiline, numberOfLines, editable = true, keyboardType, nativeID, ...rest
 }, ref) => {
-  const s = Object.assign({ outline: 'none', border: 'none', background: 'transparent', width: '100%' }, flattenStyle(style));
+  // Sem border/background/outline inline: assim utilitários Tailwind (className) e o foco visível (index.css) funcionam.
+  const s = Object.assign({ width: '100%', boxSizing: 'border-box' }, flattenStyle(style));
   const handleChange = (e) => {
     onChangeText?.(e.target.value);
     onChange?.(e);
@@ -237,7 +238,7 @@ export const TextInput = React.forwardRef(({
     });
   }
   return React.createElement('input', {
-    ...domSafeProps(rest), className, style: s, ref,
+    ...domSafeProps(rest), id: nativeID, className, style: s, ref,
     value, defaultValue, placeholder,
     type: secureTextEntry ? 'password' : keyboardType === 'email-address' ? 'email' : keyboardType === 'numeric' ? 'number' : 'text',
     disabled: !editable,
