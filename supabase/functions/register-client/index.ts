@@ -17,6 +17,17 @@ function json(body: unknown, status = 200) {
 }
 const clean = (v: unknown, max: number) => String(v ?? '').trim().slice(0, max);
 
+// Telefone BR: remove +55, 10/11 dígitos, DDD 11-99, 9º dígito = 9 se 11 dígitos. Retorna só dígitos ou null.
+function normalizePhone(v: string): string | null {
+  let d = v.replace(/\D/g, '');
+  if ((d.length === 12 || d.length === 13) && d.startsWith('55')) d = d.slice(2);
+  if (d.length !== 10 && d.length !== 11) return null;
+  const ddd = Number(d.slice(0, 2));
+  if (ddd < 11 || ddd > 99) return null;
+  if (d.length === 11 && d[2] !== '9') return null;
+  return d;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Método não permitido.' }, 405);
@@ -49,12 +60,16 @@ Deno.serve(async (req) => {
 
   const email = (row.invite_email ?? clean(body.email, 254)).toLowerCase();
   const name = row.invite_name || clean(body.name, 120);
-  const phone = row.invite_phone || clean(body.phone, 30) || null;
+  const phone = normalizePhone(row.invite_phone || clean(body.phone, 30));
   const address = clean(body.address, 200) || null;
 
   const release = async () => { await admin.rpc('release_client_invite', { p_invite_id: row.invite_id }); };
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !name || !phone) {
+  if (!phone) {
+    await release();
+    return json({ error: 'Telefone inválido.' }, 400);
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !name) {
     await release();
     return json({ error: 'Informe um e-mail válido.' }, 400);
   }

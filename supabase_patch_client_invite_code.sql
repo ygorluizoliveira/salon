@@ -26,6 +26,20 @@ returns text language sql immutable set search_path = public as $$
     '[^A-Za-z0-9-]', '', 'g'))
 $$;
 
+-- Telefone BR: só dígitos após normalizar (remove +55), 10 ou 11 dígitos, DDD 11-99, 9º dígito = 9 se 11 dígitos
+create or replace function public.is_valid_br_phone(p text)
+returns boolean language sql immutable set search_path = public as $$
+  with d as (
+    select case when length(regexp_replace(coalesce(p,''), '\D', '', 'g')) in (12,13)
+                 and regexp_replace(coalesce(p,''), '\D', '', 'g') like '55%'
+                then substr(regexp_replace(coalesce(p,''), '\D', '', 'g'), 3)
+                else regexp_replace(coalesce(p,''), '\D', '', 'g') end as n)
+  select length(n) in (10,11)
+     and substr(n,1,2)::int between 11 and 99
+     and (length(n) = 10 or substr(n,3,1) = '9')
+  from d
+$$;
+
 drop function if exists public.create_client_invite(text, text, text, uuid);
 
 create or replace function public.create_client_invite(
@@ -49,6 +63,10 @@ declare
 begin
   if auth.uid() is not null and not public.is_admin() then
     raise exception 'Acesso restrito.' using errcode = 'insufficient_privilege';
+  end if;
+
+  if nullif(btrim(coalesce(p_phone, '')), '') is not null and not public.is_valid_br_phone(p_phone) then
+    raise exception 'Telefone inválido.';
   end if;
 
   if p_client_id is not null then
