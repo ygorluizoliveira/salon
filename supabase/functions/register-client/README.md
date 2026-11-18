@@ -1,8 +1,8 @@
 # register-client — cadastro de cliente somente por convite
 
 ## Como funciona
-1. O gestor gera um convite (RPC `create_client_invite`) e recebe um **token** (32 caracteres hex) mostrado **uma única vez** (no banco fica só o hash). Envia o código/link ao cliente manualmente (WhatsApp etc.). Validade: 7 dias.
-2. O cliente informa token + e-mail + senha (+ nome/telefone/endereço se o convite não os trouxer) na função `register-client`.
+1. O gestor gera um convite (RPC `create_client_invite`) e recebe um **token** (32 caracteres hex) mostrado **uma única vez** (no banco fica só o hash). Envia o código/link ao cliente manualmente (WhatsApp etc.). Validade: **15 minutos**, uso único. O convite não leva dados: é só um link (`/cliente?convite=<token>`). Requer também `supabase_patch_client_invites_link.sql` (rodar depois do patch de convites).
+2. O cliente informa token + e-mail + senha (+ nome e telefone (obrigatórios, se o convite não os trouxer) + endereço opcional) na função `register-client`.
 3. O servidor reserva o convite (não usado e não expirado), cria o usuário pela Admin API (e-mail confirmado, `user_metadata {is_client,name,phone,address}`) e:
    - convite com `client_id` → apenas vincula `clients.user_id` ao cliente já cadastrado (sem duplicar);
    - convite sem `client_id` → cria a linha em `clients`.
@@ -18,7 +18,7 @@
 4. Criar convite (SQL Editor ou, logado como admin, `supabase.rpc`):
    ```sql
    -- cliente novo
-   select * from create_client_invite('Maria Souza', '(11) 99999-0000');
+   select * from create_client_invite();  -- sem parâmetros
    -- ligado a um cliente já cadastrado (e opcionalmente e-mail)
    select * from create_client_invite('Maria Souza', '(11) 99999-0000', 'maria@x.com', '<uuid do cliente>');
    ```

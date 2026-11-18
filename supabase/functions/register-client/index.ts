@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
 
   const release = async () => { await admin.rpc('release_client_invite', { p_invite_id: row.invite_id }); };
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !name) {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !name || !phone) {
     await release();
     return json({ error: 'Informe um e-mail válido.' }, 400);
   }
