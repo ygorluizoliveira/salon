@@ -178,7 +178,7 @@ export const Dashboard: React.FC = () => {
               className="bg-[#e8e0ec] p-6 rounded-[32px] justify-between"
               style={{ flex: 1, minWidth: 140, minHeight: 160 }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-[#625d67]">Ganhos do Dia</Text>
+              <Text className="text-[11px] font-bold uppercase tracking-widest text-[#625d67]">Ganhos do Dia</Text>
               <View>
                 <Text className="text-xs font-serif text-[#68597a]">R$</Text>
                 <Text className="text-3xl font-serif text-[#68597a]">
@@ -199,7 +199,7 @@ export const Dashboard: React.FC = () => {
               className="bg-[#e1cdf4] p-6 rounded-[32px] justify-between"
               style={{ flex: 1, minWidth: 140, minHeight: 160 }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-[#524362]">Clientes</Text>
+              <Text className="text-[11px] font-bold uppercase tracking-widest text-[#524362]">Clientes</Text>
               <Text className="text-3xl font-serif text-[#524362]">
                 {loading ? '—' : stats.totalClients}
               </Text>
@@ -256,7 +256,7 @@ export const Dashboard: React.FC = () => {
                       </View>
                     )}
                     <View className="flex-1">
-                      <Text className="text-[10px] font-bold uppercase tracking-widest text-[#625d67] mb-1">
+                      <Text className="text-[11px] font-bold uppercase tracking-widest text-[#625d67] mb-1">
                         {dateLabel} · {timeLabel}
                       </Text>
                       <Text className="text-lg font-serif text-[#35313a]">{apt.client?.name}</Text>
@@ -319,7 +319,7 @@ export const Dashboard: React.FC = () => {
 
           {/* ── Birthdays ───────────────────────────────────────────────── */}
           <View className="mb-8 bg-[#fff7d6] rounded-[24px] p-5">
-            <Text className="text-[10px] font-bold uppercase tracking-widest text-[#644f00] mb-2">
+            <Text className="text-[11px] font-bold uppercase tracking-widest text-[#644f00] mb-2">
               Aniversariantes do mês
             </Text>
             {clientsLoading ? (
@@ -355,7 +355,7 @@ export const Dashboard: React.FC = () => {
             <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#35313a', marginBottom: 4 }}>{actionApt?.client?.name}</Text>
             <Text style={{ fontSize: 12, color: '#625d67', marginBottom: 24 }}>{actionApt?.service} • {formatTime(actionApt?.time_start)} – {formatTime(actionApt?.time_end)}</Text>
 
-            <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12 }}>Alterar status</Text>
+            <Text style={{ fontSize: 11, fontWeight: 'bold', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12 }}>Alterar status</Text>
             {(['Aguardando', 'Confirmado', 'Cancelado'] as const).map(s => (
               <TouchableOpacity
                 key={s}
@@ -431,7 +431,7 @@ export const Dashboard: React.FC = () => {
 
             <ScrollView className="px-8 pt-6 pb-10" keyboardShouldPersistTaps="handled">
               {/* Status */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-3">Status</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-3">Status</Text>
               <View className="flex-row flex-wrap gap-2 mb-6">
                 {(['Aguardando', 'Confirmado', 'Cancelado'] as const).map(s => (
                   <TouchableOpacity
@@ -448,7 +448,7 @@ export const Dashboard: React.FC = () => {
               </View>
 
               {/* Serviço */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-3">Serviço *</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-3">Serviço *</Text>
               {serviceCategories.filter(c => c.status === 'active').length > 0 ? (
                 <View className={`flex-row flex-wrap gap-2 mb-6 ${isConfirmedEdit ? 'opacity-50' : ''}`}>
                   {serviceCategories.filter(c => c.status === 'active').map(cat => {
@@ -482,7 +482,7 @@ export const Dashboard: React.FC = () => {
               )}
 
               {/* Valor do Serviço */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2 mt-2">Valor do Serviço</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2 mt-2">Valor do Serviço</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#e8e0ec', borderRadius: 16, paddingHorizontal: 16, marginBottom: 24, opacity: isConfirmedEdit ? 0.5 : 1 }}>
                 <Text style={{ color: '#625d67', fontSize: 13 }}>R$</Text>
                 <TextInput
@@ -497,7 +497,7 @@ export const Dashboard: React.FC = () => {
               </View>
 
               {/* Data */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">Data *</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2">Data *</Text>
               <input
                 type="date"
                 value={editDate}
@@ -514,7 +514,7 @@ export const Dashboard: React.FC = () => {
               {/* Horários */}
               <View className="flex-row gap-4 mb-8">
                 <View className="flex-1">
-                  <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">Início</Text>
+                  <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2">Início</Text>
                   <input
                     type="time"
                     value={editTimeStart}
@@ -529,7 +529,7 @@ export const Dashboard: React.FC = () => {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">Término</Text>
+                  <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2">Término</Text>
                   <input
                     type="time"
                     value={editTimeEnd}

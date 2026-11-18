@@ -166,7 +166,7 @@ export function LoginScreen() {
           {tab === 'signup' && !forgotMode && (
           <View>
             <Text style={{
-              fontSize: 10, fontWeight: '700', color: '#625d67',
+              fontSize: 11, fontWeight: '700', color: '#625d67',
               textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8,
             }}>
               Nome completo
@@ -177,7 +177,7 @@ export function LoginScreen() {
               placeholder="Seu nome"
               autoCapitalize="words"
               style={{
-                backgroundColor: '#f9f1fa', borderRadius: 16,
+                backgroundColor: '#f9f1fa', border: '1px solid #b7afbb', borderRadius: 16,
                 paddingHorizontal: 16, paddingVertical: 14,
                 fontSize: 15, color: '#35313a',
               }}
@@ -187,7 +187,7 @@ export function LoginScreen() {
 
           {tab === 'signup' && !forgotMode && (
           <View>
-            <Text style={{ fontSize: 10, fontWeight: '700', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8 }}>
+            <Text style={{ fontSize: 11, fontWeight: '700', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8 }}>
               Sexo
             </Text>
             <View style={{ flexDirection: 'row', gap: 8 }}>
@@ -205,7 +205,7 @@ export function LoginScreen() {
           {tab === 'signup' && !forgotMode && (
           <View>
             <Text style={{
-              fontSize: 10, fontWeight: '700', color: '#625d67',
+              fontSize: 11, fontWeight: '700', color: '#625d67',
               textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8,
             }}>
               CPF
@@ -217,7 +217,7 @@ export function LoginScreen() {
               inputMode="numeric"
               maxLength={14}
               style={{
-                backgroundColor: '#f9f1fa', borderRadius: 16,
+                backgroundColor: '#f9f1fa', border: '1px solid #b7afbb', borderRadius: 16,
                 paddingHorizontal: 16, paddingVertical: 14,
                 fontSize: 15, color: '#35313a',
               }}
@@ -227,7 +227,7 @@ export function LoginScreen() {
           {/* E-mail */}
           <View>
             <Text style={{
-              fontSize: 10, fontWeight: '700', color: '#625d67',
+              fontSize: 11, fontWeight: '700', color: '#625d67',
               textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8,
             }}>
               E-mail
@@ -240,7 +240,7 @@ export function LoginScreen() {
               autoCapitalize="none"
               autoCorrect={false}
               style={{
-                backgroundColor: '#f9f1fa', borderRadius: 16,
+                backgroundColor: '#f9f1fa', border: '1px solid #b7afbb', borderRadius: 16,
                 paddingHorizontal: 16, paddingVertical: 14,
                 fontSize: 15, color: '#35313a',
               }}
@@ -251,7 +251,7 @@ export function LoginScreen() {
           {!forgotMode && (
           <View>
             <Text style={{
-              fontSize: 10, fontWeight: '700', color: '#625d67',
+              fontSize: 11, fontWeight: '700', color: '#625d67',
               textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8,
             }}>
               Senha
@@ -262,7 +262,7 @@ export function LoginScreen() {
               placeholder="••••••••"
               secureTextEntry
               style={{
-                backgroundColor: '#f9f1fa', borderRadius: 16,
+                backgroundColor: '#f9f1fa', border: '1px solid #b7afbb', borderRadius: 16,
                 paddingHorizontal: 16, paddingVertical: 14,
                 fontSize: 15, color: '#35313a',
               }}
@@ -274,7 +274,7 @@ export function LoginScreen() {
           {tab === 'signup' && !forgotMode && (
             <View>
               <Text style={{
-                fontSize: 10, fontWeight: '700', color: '#625d67',
+                fontSize: 11, fontWeight: '700', color: '#625d67',
                 textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8,
               }}>
                 Confirmar Senha
@@ -285,7 +285,7 @@ export function LoginScreen() {
                 placeholder="••••••••"
                 secureTextEntry
                 style={{
-                  backgroundColor: '#f9f1fa', borderRadius: 16,
+                  backgroundColor: '#f9f1fa', border: '1px solid #b7afbb', borderRadius: 16,
                   paddingHorizontal: 16, paddingVertical: 14,
                   fontSize: 15, color: '#35313a',
                 }}

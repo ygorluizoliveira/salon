@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
+import { translateDbError } from '../authErrors';
 import { todayLocalISO } from '../utils';
 import type { Client } from '../types';
 
@@ -248,7 +249,7 @@ export function useClient(id: string | undefined) {
       .eq('id', id)
       .select()
       .single();
-    if (err) throw new Error(err.message);
+    if (err) throw new Error(translateDbError(err));
     setClient(data);
     notifyClientsChanged();
     return data;
@@ -262,14 +263,14 @@ export function useClient(id: string | undefined) {
       .delete()
       .eq('client_id', id);
 
-    if (appointmentsError) throw new Error(appointmentsError.message);
+    if (appointmentsError) throw new Error(translateDbError(appointmentsError));
 
     const { error: clientError } = await supabase
       .from('clients')
       .delete()
       .eq('id', id);
 
-    if (clientError) throw new Error(clientError.message);
+    if (clientError) throw new Error(translateDbError(clientError));
 
     setClient(null);
     notifyClientsChanged();
@@ -291,7 +292,7 @@ export async function addClient(fields: { name: string; phone?: string | null; e
     })
     .select('id, name')
     .single();
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(translateDbError(error));
   notifyClientsChanged();
   return data as { id: string; name: string };
 }

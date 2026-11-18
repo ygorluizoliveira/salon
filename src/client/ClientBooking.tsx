@@ -264,7 +264,7 @@ export function ClientBooking() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6, marginBottom: 8 }}>
           {WEEK_DAYS.map(day => (
-            <div key={day} style={{ textAlign: 'center', fontSize: 10, fontWeight: 700, color: '#625d67' }}>{day}</div>
+            <div key={day} style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#625d67' }}>{day}</div>
           ))}
         </div>
 
@@ -305,8 +305,8 @@ export function ClientBooking() {
                 title={isClosed ? 'Salao fechado neste dia' : isNoAvailability ? 'Sem horarios disponiveis neste dia' : undefined}
               >
                 <div style={{ fontSize: 13, fontWeight: 700 }}>{date.getDate()}</div>
-                {isClosed && isCurrentMonth && <div style={{ fontSize: 9, marginTop: 2 }}>Fechado</div>}
-                {isNoAvailability && <div style={{ fontSize: 9, marginTop: 2 }}>Sem horario</div>}
+                {isClosed && isCurrentMonth && <div style={{ fontSize: 11, marginTop: 2 }}>Fechado</div>}
+                {isNoAvailability && <div style={{ fontSize: 11, marginTop: 2 }}>Sem horario</div>}
               </button>
             );
           })}
@@ -389,7 +389,7 @@ export function ClientBooking() {
 }
 
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontSize: 10, fontWeight: 700, color: '#625d67',
+  display: 'block', fontSize: 11, fontWeight: 700, color: '#625d67',
   textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8,
 };
 const inputStyle: React.CSSProperties = {

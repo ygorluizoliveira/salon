@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
+import { translateDbError } from '../authErrors';
 import { todayLocalISO, toLocalISODate } from '../utils';
 import type { Appointment } from '../types';
 
@@ -69,7 +70,7 @@ async function getAppointmentById(id: string) {
     .select('id, date, status')
     .eq('id', id)
     .single();
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(translateDbError(error));
   return data as { id: string; date: string; status: string };
 }
 
@@ -356,7 +357,7 @@ export async function createAppointment(apt: {
     .insert(payload)
     .select()
     .single();
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(translateDbError(error));
   notifyChange();
   return data;
 }
@@ -384,7 +385,7 @@ export async function updateAppointmentStatus(id: string, status: string, option
     .from('appointments')
     .update({ status })
     .eq('id', id);
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(translateDbError(error));
   notifyChange();
 }
 
@@ -424,7 +425,7 @@ export async function updateAppointment(id: string, fields: {
     .from('appointments')
     .update(fields)
     .eq('id', id);
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(translateDbError(error));
   notifyChange();
 }
 
@@ -432,7 +433,7 @@ async function findConflict(date: string, timeStart: string, timeEnd: string, ex
   if (!excludeId) {
     // RPC works for clients too (their RLS hides other people's appointments).
     const { data, error } = await supabase.rpc('get_busy_slots', { from_date: date, to_date: date });
-    if (error) throw new Error(error.message);
+    if (error) throw new Error(translateDbError(error));
     const hit = ((data ?? []) as Array<{ time_start: string; time_end: string | null }>).find(r => {
       const end = r.time_end ?? r.time_start;
       return r.time_start.slice(0, 5) < timeEnd && end.slice(0, 5) > timeStart;
@@ -450,6 +451,6 @@ async function findConflict(date: string, timeStart: string, timeEnd: string, ex
     .gt('time_end', timeStart)
     .neq('id', excludeId)
     .limit(1);
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(translateDbError(error));
   return data?.[0] ?? null;
 }

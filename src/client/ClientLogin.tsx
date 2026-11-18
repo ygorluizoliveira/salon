@@ -189,12 +189,12 @@ export function ClientLogin() {
 }
 
 const labelStyle = {
-  fontSize: 10, fontWeight: '700', color: '#625d67',
+  fontSize: 11, fontWeight: '700', color: '#625d67',
   textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6,
 };
 const inputStyle = {
   width: '100%', paddingVertical: 14, paddingHorizontal: 16, borderRadius: 16,
-  backgroundColor: '#f0e9f8', fontSize: 15, color: '#35313a',
+  backgroundColor: '#f9f1fa', border: '1px solid #b7afbb', fontSize: 15, color: '#35313a',
 };
 const errorStyle = {
   color: '#ba1a1a', backgroundColor: '#ffedec', borderRadius: 12,

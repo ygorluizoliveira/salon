@@ -10,6 +10,23 @@ export function withTimeout<T>(promise: PromiseLike<T>, ms = NETWORK_TIMEOUT_MS)
   });
 }
 
+/** Translates database/PostgREST errors to Portuguese; never exposes raw DB text. */
+export function translateDbError(err?: { message?: string; code?: string } | null): string {
+  const msg = (err?.message ?? '').toLowerCase();
+  if (err?.code === '23P01' || msg.includes('no_overlap') || msg.includes('exclusion constraint') || msg.includes('conflicting key')) {
+    return 'Esse horário acabou de ser ocupado. Escolha outro.';
+  }
+  if (msg.includes('failed to fetch') || msg.includes('network') || msg.includes('timeout')) {
+    return 'Erro de conexão. Verifique sua internet e tente novamente.';
+  }
+  if (err?.code === '42501' || msg.includes('row-level security') || msg.includes('permission denied')) {
+    return 'Você não tem permissão para realizar esta ação.';
+  }
+  if (err?.code === '23505' || msg.includes('duplicate key')) return 'Este registro já existe.';
+  if (err?.code === '23503') return 'Registro relacionado não encontrado.';
+  return 'Não foi possível concluir a operação. Tente novamente.';
+}
+
 /** Translates Supabase/network auth errors to Portuguese. */
 export function translateAuthError(raw?: string | null): string {
   const msg = (raw ?? '').toLowerCase();

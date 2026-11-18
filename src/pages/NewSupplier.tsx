@@ -66,13 +66,13 @@ function SupplierProductsSection({ supplierId }: { supplierId: string }) {
           className="flex-row items-center gap-1 px-3 py-1 bg-[#68597a] rounded-full"
         >
           <PlusCircle size={11} color="white" />
-          <Text className="text-white text-[10px] font-bold">Adicionar</Text>
+          <Text className="text-white text-[11px] font-bold">Adicionar</Text>
         </TouchableOpacity>
       </View>
 
       {showForm && (
         <View className="bg-[#f9f1fa] rounded-2xl p-4 mb-4">
-          <Text className="text-[10px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Nome do Produto *</Text>
+          <Text className="text-[11px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Nome do Produto *</Text>
           <TextInput
             value={pName}
             onChangeText={setPName}
@@ -83,7 +83,7 @@ function SupplierProductsSection({ supplierId }: { supplierId: string }) {
 
           <View className="flex-row gap-3 mb-3">
             <View className="flex-1">
-              <Text className="text-[10px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Valor (R$)</Text>
+              <Text className="text-[11px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Valor (R$)</Text>
               <TextInput
                 value={pPrice}
                 onChangeText={setPPrice}
@@ -94,7 +94,7 @@ function SupplierProductsSection({ supplierId }: { supplierId: string }) {
               />
             </View>
             <View className="flex-1">
-              <Text className="text-[10px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Data de Compra</Text>
+              <Text className="text-[11px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Data de Compra</Text>
               <input
                 type="date"
                 value={pDate}
@@ -108,7 +108,7 @@ function SupplierProductsSection({ supplierId }: { supplierId: string }) {
             </View>
           </View>
 
-          <Text className="text-[10px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Categoria</Text>
+          <Text className="text-[11px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Categoria</Text>
           <View className="flex-row flex-wrap gap-2 mb-4">
             {PRODUCT_CATEGORIES.map(cat => (
               <TouchableOpacity
@@ -116,7 +116,7 @@ function SupplierProductsSection({ supplierId }: { supplierId: string }) {
                 onPress={() => setPCategory(cat)}
                 className={`px-3 py-2 rounded-xl ${pCategory === cat ? 'bg-[#68597a]' : 'bg-white'}`}
               >
-                <Text className={`text-[10px] font-bold ${pCategory === cat ? 'text-white' : 'text-[#625d67]'}`}>{cat}</Text>
+                <Text className={`text-[11px] font-bold ${pCategory === cat ? 'text-white' : 'text-[#625d67]'}`}>{cat}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -139,10 +139,10 @@ function SupplierProductsSection({ supplierId }: { supplierId: string }) {
         </View>
       )}
 
-      {loading && <Text className="text-[10px] text-[#625d67] italic mb-2">Carregando…</Text>}
+      {loading && <Text className="text-[11px] text-[#625d67] italic mb-2">Carregando…</Text>}
 
       {!loading && products.length === 0 && !showForm && (
-        <Text className="text-[10px] text-[#625d67] italic mb-2">Nenhum produto cadastrado.</Text>
+        <Text className="text-[11px] text-[#625d67] italic mb-2">Nenhum produto cadastrado.</Text>
       )}
 
       {products.map(p => (
@@ -152,7 +152,7 @@ function SupplierProductsSection({ supplierId }: { supplierId: string }) {
           </View>
           <View className="flex-1">
             <Text className="text-sm font-semibold text-[#35313a]">{p.name}</Text>
-            <Text className="text-[10px] text-[#625d67]">
+            <Text className="text-[11px] text-[#625d67]">
               {[
                 p.category,
                 p.price != null ? `R$ ${p.price.toFixed(2).replace('.', ',')}` : null,
@@ -221,7 +221,7 @@ export const NewSupplier: React.FC = () => {
           transition={{ type: 'timing', duration: 700 }}
         >
           <View className="mb-10">
-            <Text className="text-[#68597a] font-bold tracking-[0.2em] uppercase text-[10px]">Administração</Text>
+            <Text className="text-[#68597a] font-bold tracking-[0.2em] uppercase text-[11px]">Administração</Text>
             <Text className="text-4xl font-serif mt-2 mb-4 leading-tight text-[#68597a] italic">Novo Fornecedor</Text>
             <Text className="text-[#625d67]">Gerencie suas parcerias com a elegância que seu salão boutique merece.</Text>
           </View>
@@ -345,7 +345,7 @@ export const NewSupplier: React.FC = () => {
                   </View>
                   <View className="flex-1">
                     <Text className="font-bold text-sm text-[#35313a]">{s.company_name}</Text>
-                    <Text className="text-[10px] text-[#625d67]">{s.category}{s.email ? ` · ${s.email}` : ''}</Text>
+                    <Text className="text-[11px] text-[#625d67]">{s.category}{s.email ? ` · ${s.email}` : ''}</Text>
                   </View>
                   {expandedId === s.id
                     ? <ChevronUp size={16} color="#68597a" />

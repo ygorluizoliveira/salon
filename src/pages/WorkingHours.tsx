@@ -311,8 +311,8 @@ export default function WorkingHours({ navigation }: any) {
   );
 }
 
-const labelStyle = { fontSize: 10, fontWeight: '700' as const, color: '#625d67', textTransform: 'uppercase' as const, letterSpacing: 1.5, marginBottom: 6 };
+const labelStyle = { fontSize: 11, fontWeight: '700' as const, color: '#625d67', textTransform: 'uppercase' as const, letterSpacing: 1.5, marginBottom: 6 };
 const inputStyle = {
-  backgroundColor: '#fff', borderRadius: 12, padding: 12, border: '1.5px solid #b7afbb', minHeight: 48,
+  backgroundColor: '#fff', borderRadius: 12, padding: 12, border: '1px solid #b7afbb', minHeight: 48,
   fontSize: 16, color: '#35313a', textAlign: 'center' as const, fontWeight: '700' as const,
 };

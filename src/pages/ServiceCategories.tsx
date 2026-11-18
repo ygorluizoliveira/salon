@@ -51,13 +51,13 @@ function CategoryCard({ item, onToggle, onDelete, onEdit }: CategoryCardProps) {
         {item.duration_min != null && (
           <View className="flex-row items-center gap-1">
             <Clock size={12} color="#625d67" />
-            <Text className="text-[10px] text-[#625d67]">{item.duration_min} min</Text>
+            <Text className="text-[11px] text-[#625d67]">{item.duration_min} min</Text>
           </View>
         )}
         {item.price != null && (
           <View className="flex-row items-center gap-1">
             <DollarSign size={12} color="#625d67" />
-            <Text className="text-[10px] text-[#625d67]">R$ {formatBRL(item.price)}</Text>
+            <Text className="text-[11px] text-[#625d67]">R$ {formatBRL(item.price)}</Text>
           </View>
         )}
         <TouchableOpacity
@@ -184,7 +184,7 @@ export const ServiceCategories: React.FC = () => {
         >
           {/* ── Header ──────────────────────────────────────────────────── */}
           <View className="mb-10">
-            <Text className="text-[#68597a] font-bold tracking-[0.2em] uppercase text-[10px]">Configuração</Text>
+            <Text className="text-[#68597a] font-bold tracking-[0.2em] uppercase text-[11px]">Configuração</Text>
             <Text className="text-4xl font-serif mt-2 mb-4 leading-tight text-[#68597a] italic">Categorias</Text>
             <Text className="text-[#625d67] text-sm">
               Defina os serviços que seu salão oferece — nome, duração e preço padrão.
@@ -213,7 +213,7 @@ export const ServiceCategories: React.FC = () => {
 
               {/* Name */}
               <View className="mb-5">
-                <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Nome *</Text>
+                <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Nome *</Text>
                 <TextInput
                   value={form.name}
                   onChangeText={v => setForm(f => ({ ...f, name: v }))}
@@ -225,7 +225,7 @@ export const ServiceCategories: React.FC = () => {
 
               {/* Description */}
               <View className="mb-5">
-                <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Descrição</Text>
+                <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Descrição</Text>
                 <TextInput
                   value={form.description}
                   onChangeText={v => setForm(f => ({ ...f, description: v }))}
@@ -240,7 +240,7 @@ export const ServiceCategories: React.FC = () => {
               {/* Duration + Price */}
               <View className="flex-row gap-4 mb-6">
                 <View className="flex-1">
-                  <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Duração (min)</Text>
+                  <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Duração (min)</Text>
                   <TextInput
                     value={form.duration_min}
                     onChangeText={v => setForm(f => ({ ...f, duration_min: v.replace(/[^0-9]/g, '') }))}
@@ -251,7 +251,7 @@ export const ServiceCategories: React.FC = () => {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Preço (R$)</Text>
+                  <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Preço (R$)</Text>
                   <TextInput
                     value={form.price}
                     onChangeText={v => setForm(f => ({ ...f, price: v.replace(/[^0-9,\.]/g, '') }))}
@@ -290,7 +290,7 @@ export const ServiceCategories: React.FC = () => {
               </Text>
               {categories.filter(c => c.status === 'active').length > 0 && (
                 <View className="bg-[#d0fcfe] px-3 py-1 rounded-full">
-                  <Text className="text-[10px] font-bold text-[#3a6264]">
+                  <Text className="text-[11px] font-bold text-[#3a6264]">
                     {categories.filter(c => c.status === 'active').length} ativas
                   </Text>
                 </View>

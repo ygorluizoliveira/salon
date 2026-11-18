@@ -80,6 +80,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Fallback to default behavior if local scope is not available for any reason.
       await supabase.auth.signOut();
+    } finally {
+      try { localStorage.removeItem('sb-salon-admin'); } catch { /* ignore */ }
     }
   }
 
