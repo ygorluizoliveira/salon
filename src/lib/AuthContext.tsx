@@ -2,10 +2,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from './supabase';
 import { getAppBaseUrl } from './platform';
+import { withTimeout, translateAuthError } from './authErrors';
 
 interface AuthContextValue {
   session: Session | null;
   user: User | null;
+  isAdmin: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<string | null>;
   signUp: (email: string, password: string, name?: string, gender?: string) => Promise<string | null>;
@@ -16,6 +18,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue>({
   session: null,
   user: null,
+  isAdmin: false,
   loading: true,
   signIn: async () => null,
   signUp: async () => null,
@@ -41,20 +44,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function signIn(email: string, password: string): Promise<string | null> {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return error ? error.message : null;
+    try {
+      const { error } = await withTimeout(supabase.auth.signInWithPassword({ email, password }));
+      return error ? translateAuthError(error.message) : null;
+    } catch (e: any) {
+      return translateAuthError(e?.message);
+    }
   }
 
   async function signUp(email: string, password: string, name?: string, gender?: string): Promise<string | null> {
     const meta: Record<string, string> = {};
     if (name)   meta.full_name = name.trim();
     if (gender) meta.gender   = gender;
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: Object.keys(meta).length ? { data: meta } : undefined,
-    });
-    return error ? error.message : null;
+    try {
+      const { error } = await withTimeout(supabase.auth.signUp({
+        email,
+        password,
+        options: Object.keys(meta).length ? { data: meta } : undefined,
+      }));
+      return error ? translateAuthError(error.message) : null;
+    } catch (e: any) {
+      return translateAuthError(e?.message);
+    }
   }
 
   async function signOut() {
@@ -68,14 +79,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function resetPassword(email: string): Promise<string | null> {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${getAppBaseUrl()}/reset-password`,
-    });
-    return error ? error.message : null;
+    try {
+      const { error } = await withTimeout(supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${getAppBaseUrl()}/reset-password`,
+      }));
+      return error ? translateAuthError(error.message) : null;
+    } catch (e: any) {
+      return translateAuthError(e?.message);
+    }
   }
 
+  const isAdmin = session?.user?.app_metadata?.role === 'admin';
+
   return (
-    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, signIn, signUp, signOut, resetPassword }}>
+    <AuthContext.Provider value={{ session, user: session?.user ?? null, isAdmin, loading, signIn, signUp, signOut, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

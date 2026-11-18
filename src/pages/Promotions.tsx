@@ -4,6 +4,7 @@ import { Plus, X, Check, Tag, Percent, Calendar } from 'lucide-react-native';
 import { MotiView } from 'moti';
 import { useNavigation } from '@react-navigation/native';
 import { TopBar } from '../components/TopBar';
+import { parseLocalDate } from '../lib/utils';
 import { usePromotions, addPromotion, deletePromotion } from '../lib/hooks/usePromotions';
 
 export const Promotions: React.FC = () => {
@@ -22,6 +23,15 @@ export const Promotions: React.FC = () => {
 
   async function handleAdd() {
     if (!form.title.trim()) { setAddError('Informe o título da promoção.'); return; }
+    let validUntil: string | null = null;
+    if (form.valid_until) {
+      const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(form.valid_until);
+      const probe = m ? new Date(+m[3], +m[2] - 1, +m[1]) : null;
+      if (!m || !probe || probe.getDate() !== +m[1] || probe.getMonth() !== +m[2] - 1) {
+        setAddError('Data inválida. Use DD/MM/AAAA.'); return;
+      }
+      validUntil = `${m[3]}-${m[2]}-${m[1]}`;
+    }
     setAddLoading(true);
     setAddError(null);
     try {
@@ -29,7 +39,7 @@ export const Promotions: React.FC = () => {
         title:       form.title.trim(),
         description: form.description.trim() || null,
         discount_pct: form.discount_pct ? Number(form.discount_pct) : null,
-        valid_until:  form.valid_until || null,
+        valid_until:  validUntil,
         active:       true,
       });
       setShowAdd(false);
@@ -102,7 +112,7 @@ export const Promotions: React.FC = () => {
                       <View className="flex-row items-center mt-2" style={{ gap: 4 }}>
                         <Calendar size={12} color="#625d67" />
                         <Text className="text-[11px] text-[#625d67]">
-                          Válida até {new Date(promo.valid_until).toLocaleDateString('pt-BR')}
+                          Válida até {parseLocalDate(promo.valid_until).toLocaleDateString('pt-BR')}
                         </Text>
                       </View>
                     )}
@@ -182,7 +192,7 @@ export const Promotions: React.FC = () => {
                     if (d.length > 4) m = `${d.slice(0,2)}/${d.slice(2,4)}/${d.slice(4)}`;
                     setForm(f => ({ ...f, valid_until: m }));
                   }}
-                    placeholder="DD/MM/AAAA" placeholderTextColor="#625d6766" keyboardType="numeric"
+                    placeholder="DD/MM/AAAA" placeholderTextColor="#625d6766" inputMode="numeric" maxLength={10}
                     style={{ backgroundColor: '#f0e9f8', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, fontSize: 15, color: '#35313a' }} />
                 </View>
               </View>

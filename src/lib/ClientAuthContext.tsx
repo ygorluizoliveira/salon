@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from './supabase';
+import { todayLocalISO } from './utils';
+import { withTimeout, translateAuthError } from './authErrors';
 import type { Client } from './types';
 import { authenticateWithPasskey } from './hooks/useWebAuthn';
 import { storageGet, storageRemove, storageSet } from './platform';
@@ -49,15 +51,19 @@ export function ClientAuthProvider({ children }: { children: React.ReactNode }) 
 
   async function signInWithEmail(email: string, password: string) {
     setError(null);
-    const { data: user, error: authError } = await supabase.auth.signInWithPassword({ email, password });
-    if (authError) throw new Error(authError.message);
+    let user;
+    try {
+      const res = await withTimeout(supabase.auth.signInWithPassword({ email, password }));
+      if (res.error) throw new Error(translateAuthError(res.error.message));
+      user = res.data;
+    } catch (e: any) {
+      throw new Error(translateAuthError(e?.message));
+    }
 
     // Find client linked to this auth user
-    const { data: clientData, error: clientError } = await supabase
-      .from('clients')
-      .select('*')
-      .eq('user_id', user.user?.id)
-      .single();
+    const { data: clientData, error: clientError } = await withTimeout(
+      supabase.from('clients').select('*').eq('user_id', user.user?.id).maybeSingle(),
+    ).catch((e: any) => ({ data: null, error: e as Error }));
 
     if (clientError || !clientData) throw new Error('Cliente não encontrado. Entre em contato com o salão.');
     setClient(clientData);
@@ -80,22 +86,44 @@ export function ClientAuthProvider({ children }: { children: React.ReactNode }) 
 
   async function signUp(name: string, phone: string, email: string, address: string, password: string) {
     setError(null);
-    // 1. Create Supabase auth user
-    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
-    if (authError) throw new Error(authError.message);
+    let authData;
+    try {
+      // is_client/name/phone/address feed the backend trigger that creates the clients row.
+      const res = await withTimeout(supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: { data: { is_client: true, name: name.trim(), phone: phone.trim(), address: address.trim() } },
+      }));
+      if (res.error) throw new Error(res.error.message);
+      authData = res.data;
+    } catch (e: any) {
+      throw new Error(translateAuthError(e?.message));
+    }
     const userId = authData.user?.id;
     if (!userId) throw new Error('Erro ao criar conta. Tente novamente.');
+    if (authData.user && authData.user.identities && authData.user.identities.length === 0) {
+      throw new Error('Este e-mail já está cadastrado.');
+    }
 
-    // 2. Create client record linked to auth user
-    const { data: newClient, error: insertError } = await supabase
-      .from('clients')
-      .insert({ name: name.trim(), phone: phone.trim(), email: email.trim(), address: address.trim() || null, user_id: userId, status: 'Ativo', member_since: new Date().toISOString().slice(0, 10) })
-      .select('*')
-      .single();
+    // Without a session (e-mail confirmation on) RLS hides the row; the user finishes on first login.
+    if (!authData.session) return;
 
-    if (insertError) throw new Error(insertError.message);
-    setClient(newClient);
-    storageSet(SESSION_KEY, newClient.id);
+    const findClient = () => supabase.from('clients').select('*').eq('user_id', userId).maybeSingle();
+    let { data: found } = await findClient();
+
+    if (!found) {
+      // Fallback for databases without the signup trigger: tolerate an already-existing row.
+      await supabase.from('clients').insert({
+        name: name.trim(), phone: phone.trim(), email: email.trim(), address: address.trim() || null,
+        user_id: userId, status: 'Ativo', member_since: todayLocalISO(),
+      });
+      ({ data: found } = await findClient());
+    }
+
+    if (found) {
+      setClient(found);
+      storageSet(SESSION_KEY, found.id);
+    }
   }
 
   const signOut = useCallback(() => {

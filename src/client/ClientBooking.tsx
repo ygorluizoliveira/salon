@@ -5,6 +5,7 @@ import { createAppointment } from '../lib/hooks/useAppointments';
 import { useServiceCategories } from '../lib/hooks/useServiceCategories';
 import { useSalonSettings } from '../lib/hooks/useSalonSettings';
 import { supabase } from '../lib/supabase';
+import { todayLocalISO, toLocalISODate } from '../lib/utils';
 
 const MIN_BOOK_DAYS = 5;
 const OTHER_SERVICE_MAX_LENGTH = 80;
@@ -40,7 +41,7 @@ function overlaps(startA: number, endA: number, startB: number, endB: number) {
 }
 
 function startOfMonthISO(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1).toISOString().slice(0, 10);
+  return toLocalISODate(new Date(date.getFullYear(), date.getMonth(), 1));
 }
 
 function getMonthGrid(monthStartIso: string) {
@@ -55,7 +56,7 @@ function getMonthGrid(monthStartIso: string) {
   for (let i = 0; i < 42; i++) {
     const d = new Date(gridStart);
     d.setDate(gridStart.getDate() + i);
-    days.push(d.toISOString().slice(0, 10));
+    days.push(toLocalISODate(d));
   }
 
   return { month, days };
@@ -86,7 +87,7 @@ export function ClientBooking() {
   ) || 60;
   const { slots, loading: slotsLoading } = useAvailableSlots(selectedDate, selectedDurationMin);
   const shortNotice = selectedDate ? daysUntil(selectedDate) < MIN_BOOK_DAYS : false;
-  const todayIso = new Date().toISOString().slice(0, 10);
+  const todayIso = todayLocalISO();
   const grid = getMonthGrid(monthStart);
   const openDays = new Set(hours.filter(h => h.active).map(h => h.day_of_week));
   const monthLabel = new Date(monthStart + 'T12:00:00').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
@@ -97,12 +98,7 @@ export function ClientBooking() {
 
     async function loadMonthAvailability() {
       const monthEnd = grid.days[grid.days.length - 1];
-      const { data: booked } = await supabase
-        .from('appointments')
-        .select('date, time_start, time_end')
-        .gte('date', monthStart)
-        .lte('date', monthEnd)
-        .neq('status', 'Cancelado');
+      const { data: booked } = await supabase.rpc('get_busy_slots', { from_date: monthStart, to_date: monthEnd });
 
       const bookedByDate = new Map<string, Array<{ start: number; end: number }>>();
       for (const apt of booked ?? []) {
@@ -151,6 +147,9 @@ export function ClientBooking() {
   async function handleBook() {
     if (!client || !selectedDate || !selectedTime || (selectedServices.length === 0 && !hasOtherService)) {
       setError('Selecione data, horário e serviço.'); return;
+    }
+    if (selectedDate < todayLocalISO()) {
+      setError('Não é possível agendar em data passada.'); return;
     }
     setSaving(true);
     setError(null);
@@ -279,6 +278,8 @@ export function ClientBooking() {
             const isNoAvailability = isCurrentMonth && !isPast && !isClosed && !hasAvailability;
             const isDisabled = !isCurrentMonth || isPast || isClosed || isNoAvailability;
             const isSelected = selectedDate === iso;
+
+            if (!isCurrentMonth) return <div key={iso} aria-hidden style={{ minHeight: 56 }} />;
 
             return (
               <button

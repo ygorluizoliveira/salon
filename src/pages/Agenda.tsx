@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Modal, Alert } from 'react-native';
 import { ChevronLeft, ChevronRight, Plus, MoreVertical, X, User, Check } from 'lucide-react-native';
 import { MotiView } from 'moti';
 import { TopBar } from '../components/TopBar';
@@ -7,6 +7,7 @@ import { useAppointments, useAppointmentsForMonth, useAllClients, useAddAppointm
 import type { Appointment } from '../lib/types';
 import { useServiceCategories } from '../lib/hooks/useServiceCategories';
 import { addClient } from '../lib/hooks/useClients';
+import { todayLocalISO, formatTime } from '../lib/utils';
 
 const MIN_CANCEL_DAYS = 5;
 const MIN_BOOK_DAYS = 5;
@@ -64,7 +65,7 @@ function getMonthGrid(monthStartIso: string) {
 }
 
 function getAppointmentTimeRange(apt: Appointment) {
-  return `${apt.time_start} - ${apt.time_end}`;
+  return `${formatTime(apt.time_start)} - ${formatTime(apt.time_end)}`;
 }
 
 export const Agenda: React.FC = () => {
@@ -74,7 +75,7 @@ export const Agenda: React.FC = () => {
   const [clientSearch, setClientSearch] = useState('');
   const [selectedClient, setSelectedClient] = useState<{ id: string; name: string } | null>(null);
   const [services, setServices]   = useState<string[]>([]);
-  const [date, setDate]           = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate]           = useState(todayLocalISO());
   const [timeStart, setTimeStart] = useState('09:00');
   const [saving, setSaving]         = useState(false);
   const [showClientList, setShowClientList] = useState(false);
@@ -84,8 +85,8 @@ export const Agenda: React.FC = () => {
   const [emergencyRequest, setEmergencyRequest] = useState(false);
   const [emergencyReason, setEmergencyReason] = useState('');
   const [shortNoticeAck, setShortNoticeAck] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const [monthStart,   setMonthStart]   = useState(() => startOfMonthISO(new Date().toISOString().split('T')[0]));
+  const [selectedDate, setSelectedDate] = useState(() => todayLocalISO());
+  const [monthStart,   setMonthStart]   = useState(() => startOfMonthISO(todayLocalISO()));
   const [actionApt,    setActionApt]    = useState<Appointment | null>(null);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [editApt,      setEditApt]      = useState<Appointment | null>(null);
@@ -106,7 +107,7 @@ export const Agenda: React.FC = () => {
     setEditApt(apt);
     setEditServices(apt.service ? apt.service.split(', ') : []);
     setEditDate(apt.date);
-    setEditTimeStart(apt.time_start);
+    setEditTimeStart(formatTime(apt.time_start));
     setEditStatus(apt.status);
     setEditPrice(apt.price != null ? String(apt.price) : '');
     setEditUrgentReason('');
@@ -219,7 +220,7 @@ export const Agenda: React.FC = () => {
     setCreatingClient(false);
     setNewClientPhone('');
     setServices([]);
-    setDate(new Date().toISOString().split('T')[0]);
+    setDate(todayLocalISO());
     setTimeStart('09:00');
     setPrice('');
     setEmergencyRequest(false);
@@ -379,33 +380,39 @@ export const Agenda: React.FC = () => {
             filteredApts.map((apt: Appointment) => (
               <View key={apt.id} className="flex-row gap-4 mb-8">
                 <View className="w-16 items-end pt-3">
-                  <Text className="text-base font-serif text-[#68597a] text-right">{apt.time_start}</Text>
-                  <Text className="text-[11px] text-[#625d67] text-right mt-1">{apt.time_end}</Text>
+                  <Text className="text-base font-serif text-[#68597a] text-right">{formatTime(apt.time_start)}</Text>
+                  <Text className="text-[11px] text-[#625d67] text-right mt-1">{formatTime(apt.time_end)}</Text>
                 </View>
                 <View className="flex-1">
-                  <TouchableOpacity
-                    onPress={() => openEdit(apt)}
-                    className="bg-[#e8e0ec] rounded-2xl p-5 flex-row items-center gap-4"
-                  >
-                    <View className="w-14 h-14 rounded-xl bg-[#d0c5dc] items-center justify-center" style={{ minWidth: 56 }}>
-                      <Text className="text-2xl font-serif text-[#68597a]">{apt.client?.name?.[0] ?? '?'}</Text>
-                    </View>
-                    <View className="flex-1">
-                      <Text className="text-lg font-serif text-[#35313a]">{apt.client?.name ?? '—'}</Text>
-                      <Text className="text-[#625d67] text-xs" numberOfLines={1}>{apt.service}</Text>
-                      <Text className="text-[#68597a] text-xs font-bold mt-1">{getAppointmentTimeRange(apt)}</Text>
-                      <View className="flex-row flex-wrap gap-2 mt-2">
-                        <View className={`px-2 py-0.5 rounded-full ${STATUS_BG[apt.status] ?? 'bg-[#e8e0ec]'}`}>
-                          <Text className={`text-[7px] font-bold uppercase tracking-widest ${STATUS_TEXT[apt.status] ?? 'text-[#625d67]'}`}>
-                            {apt.status}
-                          </Text>
+                  <View className="bg-[#e8e0ec] rounded-2xl p-5 flex-row items-center gap-4">
+                    <TouchableOpacity
+                      onPress={() => openEdit(apt)}
+                      className="flex-1 flex-row items-center gap-4"
+                    >
+                      <View className="w-14 h-14 rounded-xl bg-[#d0c5dc] items-center justify-center" style={{ minWidth: 56 }}>
+                        <Text className="text-2xl font-serif text-[#68597a]">{apt.client?.name?.[0] ?? '?'}</Text>
+                      </View>
+                      <View className="flex-1">
+                        <Text className="text-lg font-serif text-[#35313a]">{apt.client?.name ?? '—'}</Text>
+                        <Text className="text-[#625d67] text-xs" numberOfLines={1}>{apt.service}</Text>
+                        <Text className="text-[#68597a] text-xs font-bold mt-1">{getAppointmentTimeRange(apt)}</Text>
+                        <View className="flex-row flex-wrap gap-2 mt-2">
+                          <View className={`px-2 py-0.5 rounded-full ${STATUS_BG[apt.status] ?? 'bg-[#e8e0ec]'}`}>
+                            <Text className={`text-[7px] font-bold uppercase tracking-widest ${STATUS_TEXT[apt.status] ?? 'text-[#625d67]'}`}>
+                              {apt.status}
+                            </Text>
+                          </View>
                         </View>
                       </View>
-                    </View>
-                    <TouchableOpacity onPress={(e) => { e.stopPropagation?.(); setActionApt(apt); }}>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setActionApt(apt)}
+                      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                      style={{ padding: 4 }}
+                    >
                       <MoreVertical size={20} color="#68597a" />
                     </TouchableOpacity>
-                  </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             ))
@@ -909,7 +916,7 @@ export const Agenda: React.FC = () => {
           {/* Sheet – irmão do backdrop, cliques não chegam ao backdrop */}
           <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#fef7fe', borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 32 }}>
             <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#35313a', marginBottom: 4 }}>{actionApt?.client?.name}</Text>
-            <Text style={{ fontSize: 12, color: '#625d67', marginBottom: 24 }}>{actionApt?.service} • {actionApt?.time_start} – {actionApt?.time_end}</Text>
+            <Text style={{ fontSize: 12, color: '#625d67', marginBottom: 24 }}>{actionApt?.service} • {formatTime(actionApt?.time_start)} – {formatTime(actionApt?.time_end)}</Text>
 
             <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12 }}>Alterar status</Text>
             {(['Aguardando', 'Confirmado', 'Cancelado'] as const).map(s => (

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useClientAuth } from '../lib/ClientAuthContext';
 import { supabase } from '../lib/supabase';
+import { parseLocalDate, todayLocalISO } from '../lib/utils';
 import { useSalonSettings } from '../lib/hooks/useSalonSettings';
 
 interface Appointment {
@@ -47,8 +48,8 @@ export function ClientHome() {
   const { appointments, loading } = useClientAppointments(client?.id ?? null);
   const [tab, setTab] = useState<'agendamentos' | 'historico'>('agendamentos');
 
-  const upcoming = appointments.filter(a => a.status !== 'Cancelado' && new Date(a.date) >= new Date());
-  const history  = appointments.filter(a => a.status === 'Concluído' || new Date(a.date) < new Date());
+  const upcoming = appointments.filter(a => a.status !== 'Cancelado' && a.date >= todayLocalISO());
+  const history  = appointments.filter(a => a.status === 'Concluído' || a.date < todayLocalISO());
 
   const list = tab === 'agendamentos' ? upcoming : history;
 
@@ -106,7 +107,7 @@ export function ClientHome() {
                 <View style={{ flex: 1, marginRight: 10 }}>
                   <Text style={{ fontWeight: '700', fontSize: 15, color: '#35313a' }}>{a.service}</Text>
                   <Text style={{ marginTop: 4, fontSize: 12, color: '#625d67' }}>
-                    {new Date(a.date).toLocaleDateString('pt-BR')}
+                    {parseLocalDate(a.date).toLocaleDateString('pt-BR')}
                     {a.time_start ? ` às ${a.time_start.slice(0,5)}` : ''}
                     {a.price ? ` · R$ ${a.price.toFixed(2)}` : ''}
                   </Text>

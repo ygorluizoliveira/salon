@@ -2,6 +2,7 @@ import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import { ClientApp } from './client/ClientApp.tsx';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import './index.css';
 
 const isClientPortal = /^\/cliente(?:\/|$)/.test(window.location.pathname);
@@ -41,6 +42,6 @@ console.warn  = (...args: unknown[]) => { if (!isInteropWarning(args)) _consoleW
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {isClientPortal ? <ClientApp /> : <App />}
+    <ErrorBoundary>{isClientPortal ? <ClientApp /> : <App />}</ErrorBoundary>
   </StrictMode>,
 );

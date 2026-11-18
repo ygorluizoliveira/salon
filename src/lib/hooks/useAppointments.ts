@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
+import { todayLocalISO, toLocalISODate } from '../utils';
 import type { Appointment } from '../types';
 
 const MIN_CANCEL_DAYS = 5;
@@ -77,7 +78,7 @@ export function usePendingAppointments() {
   const [pending, setPending] = useState<Appointment[]>([]);
 
   async function load() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayLocalISO();
     const { data } = await supabase
       .from('appointments')
       .select('*, client:clients(id, name, avatar_url, status, phone)')
@@ -114,7 +115,7 @@ export function useAppointments(date?: string) {
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const targetDate = date ?? new Date().toISOString().split('T')[0];
+  const targetDate = date ?? todayLocalISO();
 
   useEffect(() => {
     let cancelled = false;
@@ -170,7 +171,7 @@ export function useAppointmentsForWeek(baseDate?: string) {
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const anchorIso = baseDate ?? new Date().toISOString().split('T')[0];
+  const anchorIso = baseDate ?? todayLocalISO();
 
   useEffect(() => {
     let cancelled = false;
@@ -187,8 +188,8 @@ export function useAppointmentsForWeek(baseDate?: string) {
       end.setDate(start.getDate() + 6);
 
       return {
-        start: start.toISOString().split('T')[0],
-        end: end.toISOString().split('T')[0],
+        start: toLocalISODate(start),
+        end: toLocalISODate(end),
       };
     }
 
@@ -252,7 +253,7 @@ export function useAppointmentsForMonth(monthIso: string) {
       const d = new Date(`${start}T12:00:00`);
       d.setMonth(d.getMonth() + 1);
       d.setDate(0);
-      const end = d.toISOString().split('T')[0];
+      const end = toLocalISODate(d);
 
       const { data } = await supabase
         .from('appointments')
@@ -428,18 +429,27 @@ export async function updateAppointment(id: string, fields: {
 }
 
 async function findConflict(date: string, timeStart: string, timeEnd: string, excludeId?: string) {
-  let q = supabase
+  if (!excludeId) {
+    // RPC works for clients too (their RLS hides other people's appointments).
+    const { data, error } = await supabase.rpc('get_busy_slots', { from_date: date, to_date: date });
+    if (error) throw new Error(error.message);
+    const hit = ((data ?? []) as Array<{ time_start: string; time_end: string | null }>).find(r => {
+      const end = r.time_end ?? r.time_start;
+      return r.time_start.slice(0, 5) < timeEnd && end.slice(0, 5) > timeStart;
+    });
+    return hit ? { id: '', time_start: hit.time_start.slice(0, 5), time_end: (hit.time_end ?? '').slice(0, 5), client: null } : null;
+  }
+
+  // Editing is admin-only: read the table directly so the appointment itself can be excluded.
+  const { data, error } = await supabase
     .from('appointments')
     .select('id, time_start, time_end, client:clients(name)')
     .eq('date', date)
     .neq('status', 'Cancelado')
     .lt('time_start', timeEnd)
     .gt('time_end', timeStart)
+    .neq('id', excludeId)
     .limit(1);
-
-  if (excludeId) q = q.neq('id', excludeId);
-
-  const { data, error } = await q;
   if (error) throw new Error(error.message);
   return data?.[0] ?? null;
 }

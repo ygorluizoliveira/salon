@@ -4,6 +4,7 @@ import { useWorkingHours } from '../lib/hooks/useScheduling';
 import type { WorkingHour } from '../lib/hooks/useScheduling';
 import { useSalonSettings } from '../lib/hooks/useSalonSettings';
 import { TopBar } from '../components/TopBar';
+import { todayLocalISO } from '../lib/utils';
 
 const DAYS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 const DEFAULT_OPEN  = '09:00';
@@ -77,8 +78,8 @@ export default function WorkingHours({ navigation }: any) {
     for (let d = 0; d < 7; d++) {
       const found = hours.find(h => h.day_of_week === d);
       init[d] = {
-        open:   found?.open_time  ?? DEFAULT_OPEN,
-        close:  found?.close_time ?? DEFAULT_CLOSE,
+        open:   (found?.open_time  ?? DEFAULT_OPEN).slice(0, 5),
+        close:  (found?.close_time ?? DEFAULT_CLOSE).slice(0, 5),
         active: found?.active     ?? (d !== 0),   // Sun off by default
       };
     }
@@ -132,7 +133,7 @@ export default function WorkingHours({ navigation }: any) {
   }
 
   async function addClosedDate() {
-    const todayIso = new Date().toISOString().slice(0, 10);
+    const todayIso = todayLocalISO();
     if (!closedDateInput) {
       setErr('Informe uma data no formato DD-MM-AAAA.');
       return;
@@ -143,6 +144,12 @@ export default function WorkingHours({ navigation }: any) {
       return;
     }
     const dateIso = ddmmyyyyToIso(closedDateInput);
+    const [yy, mm, dd] = dateIso.split('-').map(Number);
+    const probe = new Date(yy, mm - 1, dd);
+    if (probe.getFullYear() !== yy || probe.getMonth() !== mm - 1 || probe.getDate() !== dd) {
+      setErr('Data inválida.');
+      return;
+    }
     if (dateIso < todayIso) {
       setErr('Use apenas datas futuras para fechamento.');
       return;
@@ -182,7 +189,7 @@ export default function WorkingHours({ navigation }: any) {
               onChangeText={(text) => setClosedDateInput(applyDateMask(text))}
               placeholder="DD-MM-AAAA"
               maxLength={10}
-              keyboardType="numeric"
+              inputMode="numeric"
               style={{ ...inputStyle, flex: 1, textAlign: 'left' }}
             />
             <TouchableOpacity
@@ -256,7 +263,7 @@ export default function WorkingHours({ navigation }: any) {
                         onChangeText={t => setRow(dow, { open: t })}
                         placeholder="09:00"
                         maxLength={5}
-                        keyboardType="numeric"
+                        inputMode="numeric"
                         style={inputStyle}
                       />
                     </View>
@@ -268,7 +275,7 @@ export default function WorkingHours({ navigation }: any) {
                         onChangeText={t => setRow(dow, { close: t })}
                         placeholder="18:00"
                         maxLength={5}
-                        keyboardType="numeric"
+                        inputMode="numeric"
                         style={inputStyle}
                       />
                     </View>

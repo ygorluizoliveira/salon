@@ -8,7 +8,7 @@ import { useSalonSettings } from '../lib/hooks/useSalonSettings';
 type Tab = 'login' | 'signup';
 
 export function LoginScreen() {
-  const { signIn, signUp, resetPassword } = useAuth();
+  const { signIn, resetPassword } = useAuth();
   const { salonName } = useSalonSettings();
   const [tab, setTab]           = useState<Tab>('login');
   const [email, setEmail]       = useState('');
@@ -82,18 +82,8 @@ export function LoginScreen() {
       }
     }
     setLoading(true);
-    if (tab === 'login') {
-      const err = await signIn(email.trim(), password);
-      if (err) setError(err);
-    } else {
-      const err = await signUp(email.trim(), password, name.trim(), gender || undefined);
-      if (err) {
-        setError(err);
-      } else {
-        setSuccess('Conta criada! Verifique seu e-mail para confirmar o acesso.');
-        switchTab('login');
-      }
-    }
+    const err = await signIn(email.trim(), password);
+    if (err) setError(err);
     setLoading(false);
   }
 
@@ -136,31 +126,7 @@ export function LoginScreen() {
           </Text>
         </View>
 
-        {/* Tabs */}
-        {!forgotMode && (
-        <View style={{
-          flexDirection: 'row', backgroundColor: '#e8e0ec',
-          borderRadius: 50, padding: 4, marginBottom: 16,
-        }}>
-          {(['login', 'signup'] as Tab[]).map(t => (
-            <TouchableOpacity
-              key={t}
-              onPress={() => switchTab(t)}
-              style={{
-                flex: 1, paddingVertical: 12, borderRadius: 50, alignItems: 'center',
-                backgroundColor: tab === t ? '#68597a' : 'transparent',
-              }}
-            >
-              <Text style={{
-                fontWeight: '700', fontSize: 14,
-                color: tab === t ? '#fff' : '#625d67',
-              }}>
-                {t === 'login' ? 'Entrar' : 'Criar conta'}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        )}
+        {/* Cadastro desativado: gestão é restrita a administradores */}
 
         {/* Form */}
         <View style={{

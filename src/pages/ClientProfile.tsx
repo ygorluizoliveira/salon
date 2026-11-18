@@ -9,6 +9,7 @@ import { useServiceHistory } from '../lib/hooks/useServiceHistory';
 import { uploadAvatarFile } from '../lib/avatarUpload';
 import type { ClientStatus } from '../lib/types';
 import { navigationRef } from '../lib/navigationRef';
+import { parseLocalDate } from '../lib/utils';
 
 const STATUSES: ClientStatus[] = ['Ativo', 'Inativo'];
 const CONTACT_OPTIONS = ['WhatsApp', 'Telefone', 'E-mail', 'Instagram'];
@@ -358,7 +359,7 @@ export const ClientProfile: React.FC = () => {
                   })()}
                   <Text className="text-4xl font-serif font-bold text-[#68597a] text-center">{client.name}</Text>
                   <Text className="text-[#625d67] font-bold tracking-widest uppercase text-xs mt-2">
-                    {client.member_since ? `Cliente desde ${new Date(client.member_since).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}` : ''}
+                    {client.member_since ? `Cliente desde ${parseLocalDate(client.member_since).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}` : ''}
                   </Text>
 
                   <View className="flex-row flex-wrap justify-center gap-3 mt-6">
@@ -433,7 +434,7 @@ export const ClientProfile: React.FC = () => {
                           <Text className="text-[8px] font-bold text-[#3a6264] uppercase">{item.status}</Text>
                         </View>
                         <Text className="text-[10px] text-[#625d67]">
-                          {new Date(item.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          {parseLocalDate(item.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </Text>
                       </View>
                       <Text className="text-lg font-bold text-[#35313a] mb-1">{item.title}</Text>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabase';
+import { toLocalISODate } from '../utils';
 
 // ── Working hours ──────────────────────────────────────────────────────────────
 export interface WorkingHour {
@@ -78,11 +79,7 @@ export function useAvailableSlots(dateStr: string | null, serviceDurationMin = 6
       if (!wh) { if (!cancelled) { setSlots([]); setLoading(false); } return; }
 
       // Fetch booked appointments for this date
-      const { data: booked } = await supabase
-        .from('appointments')
-        .select('time_start, time_end')
-        .eq('date', dateStr)
-        .neq('status', 'Cancelado');
+      const { data: booked } = await supabase.rpc('get_busy_slots', { from_date: dateStr, to_date: dateStr });
 
       const bookedRanges = (booked ?? []).map(a => {
         const start = toMinutes(a.time_start);
@@ -92,9 +89,14 @@ export function useAvailableSlots(dateStr: string | null, serviceDurationMin = 6
       });
 
       const allSlots = generateSlots(wh.open_time, wh.close_time, serviceDurationMin);
+      const now = new Date();
+      const isToday = dateStr === toLocalISODate(now);
+      const nowMin = now.getHours() * 60 + now.getMinutes();
       const result: TimeSlot[] = allSlots.map(t => ({
         time: t,
-        available: !bookedRanges.some(r => overlaps(toMinutes(t), toMinutes(t) + serviceDurationMin, r.start, r.end)),
+        available:
+          !(isToday && toMinutes(t) <= nowMin) &&
+          !bookedRanges.some(r => overlaps(toMinutes(t), toMinutes(t) + serviceDurationMin, r.start, r.end)),
       }));
 
       if (!cancelled) {
