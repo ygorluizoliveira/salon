@@ -18,6 +18,27 @@ export function parseLocalDate(s: string): Date {
   return new Date(y, (m || 1) - 1, d || 1);
 }
 
+type UserLike = { email?: string | null; user_metadata?: Record<string, any> | null } | null | undefined;
+
+/** Person's name: metadata name, else capitalized e-mail prefix without digits/underscores. */
+export function displayName(user: UserLike): string {
+  const meta = user?.user_metadata;
+  const name = String(meta?.name || meta?.full_name || '').trim();
+  if (name) return name;
+  const prefix = (user?.email ?? '').split('@')[0].replace(/[\d_.\-]+/g, ' ').trim();
+  if (!prefix) return 'você';
+  return prefix.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
+export function userGender(user: UserLike): 'F' | 'M' | 'O' {
+  const g = user?.user_metadata?.gender;
+  return g === 'F' || g === 'M' ? g : 'O';
+}
+
+export function welcomeWord(gender?: string | null): string {
+  return gender === 'F' ? 'Bem-vinda' : gender === 'M' ? 'Bem-vindo' : 'Boas-vindas';
+}
+
 /** "HH:MM:SS" -> "HH:MM". */
 export function formatTime(t?: string | null): string {
   return t ? t.slice(0, 5) : '';
