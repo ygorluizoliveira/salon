@@ -4,6 +4,7 @@ import { Search, UserPlus, X, Check, Phone, ChevronRight } from 'lucide-react-na
 import { MotiView } from 'moti';
 import { useNavigation } from '@react-navigation/native';
 import { TopBar } from '../components/TopBar';
+import { InviteClientModal } from '../components/InviteClientModal';
 import { useClients, addClient } from '../lib/hooks/useClients';
 import type { Client } from '../lib/types';
 
@@ -26,6 +27,7 @@ export const ClientList: React.FC = () => {
   const [search, setSearch]       = useState('');
   const [filter, setFilter]       = useState<FilterStatus>('Todos');
   const [showAdd, setShowAdd]     = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
 
   // Add form state
   const [newName,  setNewName]    = useState('');
@@ -81,6 +83,11 @@ export const ClientList: React.FC = () => {
           <View style={{ marginBottom: 24 }}>
             <Text style={{ fontSize: 36, color: '#68597a', fontStyle: 'italic', marginBottom: 4 }}>Clientes</Text>
             <Text style={{ color: '#625d67', fontSize: 14 }}>Gerencie seus relacionamentos</Text>
+            <TouchableOpacity onPress={() => setShowInvite(true)}
+              style={{ alignSelf: 'flex-start', marginTop: 12, backgroundColor: '#68597a', borderRadius: 50, paddingHorizontal: 20, paddingVertical: 10 }}>
+              <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>Convidar cliente</Text>
+            </TouchableOpacity>
+            <InviteClientModal key={showInvite ? 'open' : 'closed'} visible={showInvite} onClose={() => setShowInvite(false)} />
           </View>
 
           {/* Stats */}

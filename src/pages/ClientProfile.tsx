@@ -10,6 +10,7 @@ import { uploadAvatarFile } from '../lib/avatarUpload';
 import type { ClientStatus } from '../lib/types';
 import { navigationRef } from '../lib/navigationRef';
 import { parseLocalDate } from '../lib/utils';
+import { InviteClientModal } from '../components/InviteClientModal';
 
 const STATUSES: ClientStatus[] = ['Ativo', 'Inativo'];
 const CONTACT_OPTIONS = ['WhatsApp', 'Telefone', 'E-mail', 'Instagram'];
@@ -66,6 +67,7 @@ export const ClientProfile: React.FC = () => {
   const clientId: string | undefined = route.params?.id;
 
   const { client, loading: clientLoading, updateClient, deleteClient } = useClient(clientId);
+  const [showInvite, setShowInvite] = useState(false);
   const { history, loading: historyLoading }             = useServiceHistory(clientId);
 
   const loading = clientLoading || historyLoading;
@@ -361,6 +363,11 @@ export const ClientProfile: React.FC = () => {
                   <Text className="text-[#625d67] font-bold tracking-widest uppercase text-xs mt-2">
                     {client.member_since ? `Cliente desde ${parseLocalDate(client.member_since).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}` : ''}
                   </Text>
+                  <TouchableOpacity onPress={() => setShowInvite(true)}
+                    style={{ marginTop: 12, backgroundColor: '#68597a', borderRadius: 50, paddingHorizontal: 20, paddingVertical: 10 }}>
+                    <Text style={{ color: '#fff', fontWeight: '700', fontSize: 13 }}>Convidar para o app</Text>
+                  </TouchableOpacity>
+                  <InviteClientModal key={showInvite ? 'open' : 'closed'} visible={showInvite} onClose={() => setShowInvite(false)} client={client} />
 
                   <View className="flex-row flex-wrap justify-center gap-3 mt-6">
                     {client.email && (

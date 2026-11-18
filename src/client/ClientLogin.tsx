@@ -9,10 +9,11 @@ type Mode = 'login' | 'register';
 type LoginMethod = 'senha' | 'digital';
 
 export function ClientLogin() {
-  const { signInWithEmail, signInWithPasskey, signUp } = useClientAuth();
+  const { signInWithEmail, signInWithPasskey, registerWithInvite } = useClientAuth();
   const { salonName } = useSalonSettings();
 
-  const [mode, setMode] = useState<Mode>('login');
+  const initialToken = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('convite') ?? '' : '';
+  const [mode, setMode] = useState<Mode>(initialToken ? 'register' : 'login');
 
   // Login state
   const [email, setEmail]           = useState('');
@@ -21,13 +22,10 @@ export function ClientLogin() {
   const [passkeyEmail, setPasskeyEmail] = useState('');
 
   // Register state
-  const [regName, setRegName]       = useState('');
-  const [regPhone, setRegPhone]     = useState('');
+  const [inviteToken, setInviteToken] = useState(initialToken);
   const [regEmail, setRegEmail]     = useState('');
-  const [regAddress, setRegAddress] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regPassword2, setRegPassword2] = useState('');
-  const [registered, setRegistered] = useState(false);
 
   const [error, setError]   = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -55,11 +53,11 @@ export function ClientLogin() {
   async function handleRegister() {
     setError(null);
     if (regPassword !== regPassword2) { setError('As senhas não coincidem.'); return; }
-    if (regPassword.length < 6) { setError('A senha deve ter pelo menos 6 caracteres.'); return; }
+    if (regPassword.length < 8 || regPassword.length > 72) { setError('A senha deve ter entre 8 e 72 caracteres.'); return; }
+    if (!inviteToken.trim() || !regEmail.trim()) { setError('Informe o código do convite e o e-mail.'); return; }
     setLoading(true);
     try {
-      await signUp(regName, regPhone, regEmail, regAddress, regPassword);
-      setRegistered(true);
+      await registerWithInvite(inviteToken, regEmail, regPassword);
     } catch (err: any) { setError(err.message); }
     finally { setLoading(false); }
   }
@@ -88,7 +86,7 @@ export function ClientLogin() {
             backgroundColor: mode === m ? '#68597a' : '#e8e0ec', alignItems: 'center',
           }}>
             <Text style={{ fontWeight: '700', fontSize: 14, color: mode === m ? '#fff' : '#625d67' }}>
-              {m === 'login' ? 'Entrar' : 'Criar conta'}
+              {m === 'login' ? 'Entrar' : 'Tenho um convite'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -99,45 +97,28 @@ export function ClientLogin() {
         width: '100%', maxWidth: 400,
       }}>
         {mode === 'register' && (
-          registered ? (
-            <View style={{ alignItems: 'center', paddingVertical: 16 }}>
-              <Text style={{ fontSize: 48, marginBottom: 12 }}>🎉</Text>
-              <Text style={{ color: '#68597a', marginBottom: 8, fontSize: 20, fontWeight: '700' }}>Conta criada!</Text>
-              <Text style={{ color: '#625d67', fontSize: 14, textAlign: 'center' }}>
-                {regEmail.includes('@') ? 'Verifique seu e-mail para confirmar, depois volte para entrar.' : 'Já pode acessar sua área.'}
-              </Text>
-              <TouchableOpacity onPress={() => { switchMode('login'); setRegistered(false); }} style={btnStyle(false)}>
-                <Text style={btnTextStyle}>Ir para o login</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View>
-              <Text style={labelStyle}>Nome completo</Text>
-              <TextInput value={regName} onChangeText={setRegName} placeholder="Seu nome" style={inputStyle} />
+          <View>
+            <Text style={{ color: '#625d67', fontSize: 13, marginBottom: 14 }}>
+              O cadastro é feito apenas por convite. Use o código ou link enviado pelo salão.
+            </Text>
+            <Text style={labelStyle}>Código do convite</Text>
+            <TextInput value={inviteToken} onChangeText={setInviteToken} placeholder="Cole o código" style={inputStyle} autoCapitalize="none" autoCorrect={false} />
 
-              <Text style={{ ...labelStyle, marginTop: 14 }}>Telefone / WhatsApp</Text>
-              <TextInput value={regPhone} onChangeText={setRegPhone} placeholder="(11) 99999-9999" style={inputStyle} keyboardType="phone-pad" />
+            <Text style={{ ...labelStyle, marginTop: 14 }}>E-mail</Text>
+            <TextInput value={regEmail} onChangeText={setRegEmail} placeholder="seu@email.com" style={inputStyle} autoCapitalize="none" keyboardType="email-address" />
 
-              <Text style={{ ...labelStyle, marginTop: 14 }}>E-mail</Text>
-              <TextInput value={regEmail} onChangeText={setRegEmail} placeholder="seu@email.com" style={inputStyle} autoCapitalize="none" keyboardType="email-address" />
+            <Text style={{ ...labelStyle, marginTop: 14 }}>Senha</Text>
+            <TextInput value={regPassword} onChangeText={setRegPassword} placeholder="8 a 72 caracteres" style={inputStyle} secureTextEntry />
 
-              <Text style={{ ...labelStyle, marginTop: 14 }}>Endereço</Text>
-              <TextInput value={regAddress} onChangeText={setRegAddress} placeholder="Rua, número, bairro, cidade" style={inputStyle} />
+            <Text style={{ ...labelStyle, marginTop: 14 }}>Confirmar senha</Text>
+            <TextInput value={regPassword2} onChangeText={setRegPassword2} placeholder="Repita a senha" style={inputStyle} secureTextEntry />
 
-              <Text style={{ ...labelStyle, marginTop: 14 }}>Senha</Text>
-              <TextInput value={regPassword} onChangeText={setRegPassword} placeholder="Mínimo 6 caracteres" style={inputStyle} secureTextEntry />
-
-              <Text style={{ ...labelStyle, marginTop: 14 }}>Confirmar senha</Text>
-              <TextInput value={regPassword2} onChangeText={setRegPassword2} placeholder="Repita a senha" style={inputStyle} secureTextEntry />
-
-              {error && <Text style={errorStyle}>{error}</Text>}
-              <TouchableOpacity disabled={loading} onPress={handleRegister} style={btnStyle(loading)}>
-                <Text style={btnTextStyle}>{loading ? 'Criando conta...' : 'Criar conta'}</Text>
-              </TouchableOpacity>
-            </View>
-          )
+            {error && <Text style={errorStyle}>{error}</Text>}
+            <TouchableOpacity disabled={loading} onPress={handleRegister} style={btnStyle(loading)}>
+              <Text style={btnTextStyle}>{loading ? 'Criando conta...' : 'Criar conta com convite'}</Text>
+            </TouchableOpacity>
+          </View>
         )}
-
         {mode === 'login' && (
           <View>
             {webAuthnSupported && (

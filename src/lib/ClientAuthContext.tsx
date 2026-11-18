@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from './supabase';
-import { todayLocalISO } from './utils';
 import { withTimeout, translateAuthError } from './authErrors';
 import type { Client } from './types';
 import { authenticateWithPasskey } from './hooks/useWebAuthn';
@@ -11,7 +10,7 @@ interface ClientAuthState {
   loading: boolean;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signInWithPasskey: (clientId: string) => Promise<boolean>;
-  signUp: (name: string, phone: string, email: string, address: string, password: string) => Promise<void>;
+  registerWithInvite: (token: string, email: string, password: string) => Promise<void>;
   signOut: () => void;
   error: string | null;
 }
@@ -21,7 +20,7 @@ const ClientAuthContext = createContext<ClientAuthState>({
   loading: true,
   signInWithEmail: async () => {},
   signInWithPasskey: async () => false,
-  signUp: async () => {},
+  registerWithInvite: async () => {},
   signOut: () => {},
   error: null,
 });
@@ -84,55 +83,34 @@ export function ClientAuthProvider({ children }: { children: React.ReactNode }) 
     return false;
   }
 
-  async function signUp(name: string, phone: string, email: string, address: string, password: string) {
+  async function registerWithInvite(token: string, email: string, password: string) {
     setError(null);
-    let authData;
+    const generic = 'Convite inválido, expirado ou já utilizado. Peça um novo convite ao salão.';
+    let res;
     try {
-      // is_client/name/phone/address feed the backend trigger that creates the clients row.
-      const res = await withTimeout(supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: { data: { is_client: true, name: name.trim(), phone: phone.trim(), address: address.trim() } },
-      }));
-      if (res.error) throw new Error(res.error.message);
-      authData = res.data;
+      res = await withTimeout(
+        supabase.functions.invoke('register-client', { body: { token: token.trim(), email: email.trim(), password } }),
+      );
     } catch (e: any) {
       throw new Error(translateAuthError(e?.message));
     }
-    const userId = authData.user?.id;
-    if (!userId) throw new Error('Erro ao criar conta. Tente novamente.');
-    if (authData.user && authData.user.identities && authData.user.identities.length === 0) {
-      throw new Error('Este e-mail já está cadastrado.');
+    if (res.error) {
+      const r = (res.error as any).context as Response | undefined;
+      if (r && typeof r.status === 'number') {
+        throw new Error(r.status === 429 ? 'Muitas tentativas. Aguarde um instante e tente novamente.' : generic);
+      }
+      throw new Error(translateAuthError(res.error.message));
     }
-
-    // Without a session (e-mail confirmation on) RLS hides the row; the user finishes on first login.
-    if (!authData.session) return;
-
-    const findClient = () => supabase.from('clients').select('*').eq('user_id', userId).maybeSingle();
-    let { data: found } = await findClient();
-
-    if (!found) {
-      // Fallback for databases without the signup trigger: tolerate an already-existing row.
-      await supabase.from('clients').insert({
-        name: name.trim(), phone: phone.trim(), email: email.trim(), address: address.trim() || null,
-        user_id: userId, status: 'Ativo', member_since: todayLocalISO(),
-      });
-      ({ data: found } = await findClient());
-    }
-
-    if (found) {
-      setClient(found);
-      storageSet(SESSION_KEY, found.id);
-    }
+    if (!res.data?.ok) throw new Error(generic);
+    await signInWithEmail(email.trim(), password);
   }
-
   const signOut = useCallback(() => {
     setClient(null);
     storageRemove(SESSION_KEY);
   }, []);
 
   return (
-    <ClientAuthContext.Provider value={{ client, loading, signInWithEmail, signInWithPasskey, signUp, signOut, error }}>
+    <ClientAuthContext.Provider value={{ client, loading, signInWithEmail, signInWithPasskey, registerWithInvite, signOut, error }}>
       {children}
     </ClientAuthContext.Provider>
   );
