@@ -10,7 +10,7 @@ interface AuthContextValue {
   isAdmin: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<string | null>;
-  signUp: (email: string, password: string, name?: string, cpf?: string) => Promise<string | null>;
+  signUp: (email: string, password: string, name?: string, cpf?: string, gender?: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<string | null>;
 }
@@ -52,11 +52,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function signUp(email: string, password: string, name?: string, cpf?: string): Promise<string | null> {
+  async function signUp(email: string, password: string, name?: string, cpf?: string, gender?: string): Promise<string | null> {
     const generic = 'Não foi possível criar a conta. Verifique os dados e tente novamente.';
     try {
       const { data, error } = await withTimeout(
-        supabase.functions.invoke('register-staff', { body: { email, cpf, password, name } }),
+        supabase.functions.invoke('register-staff', { body: { email, cpf, password, name, gender } }),
       );
       if (error) {
         const res = (error as any).context as Response | undefined;

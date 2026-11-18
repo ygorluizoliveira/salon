@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, Modal, TextInput } from 'react-native';
 import { TrendingUp, Users, MoreVertical, Plus, X, Check, MessageCircle } from 'lucide-react-native';
 import { MotiView } from 'moti';
@@ -11,7 +11,7 @@ import { useDashboardStats } from '../lib/hooks/useDashboardStats';
 import { useServiceCategories } from '../lib/hooks/useServiceCategories';
 import { useClients } from '../lib/hooks/useClients';
 import type { Appointment } from '../lib/types';
-import { formatTime } from '../lib/utils';
+import { formatTime, displayName, userGender, welcomeWord } from '../lib/utils';
 
 // Maps an appointment status to its Tailwind colour classes
 const STATUS_COLORS: Record<string, string> = {
@@ -30,7 +30,7 @@ function formatBRL(value: number) {
 /**
  * Normalises any Brazilian phone string to the international E.164 digits
  * expected by wa.me (e.g. "5511999999999").
- * Handles: +55…, 0055…, 55…, (11) 9…, 9… (no DDD), etc.
+ * Handles: +55â€¦, 0055â€¦, 55â€¦, (11) 9â€¦, 9â€¦ (no DDD), etc.
  */
 function toWhatsappNumber(raw: string): string {
   const digits = raw.replace(/\D/g, '');
@@ -79,12 +79,8 @@ export const Dashboard: React.FC = () => {
 
   const { user } = useAuth();
   const { salonName } = useSalonSettings();
-  const firstName = (user?.user_metadata?.full_name as string | undefined)
-    ?.split(' ')[0]
-    ?? user?.email?.split('@')[0]
-    ?? 'você';
-  const gender    = user?.user_metadata?.gender as string | undefined;
-  const greeting  = gender === 'M' ? 'Bem-vindo' : 'Bem-vinda';
+  const firstName = displayName(user).split(' ')[0];
+  const greeting  = welcomeWord(userGender(user));
 
   const loading = aptsLoading || statsLoading;
   const currentMonth = new Date().getMonth() + 1;
@@ -121,10 +117,10 @@ export const Dashboard: React.FC = () => {
   async function handleEditSave() {
     if (!editApt) return;
     if (editApt.status === 'Confirmado' && editStatus !== 'Cancelado') {
-      setEditError('Agendamento confirmado não pode ser editado.');
+      setEditError('Agendamento confirmado nÃ£o pode ser editado.');
       return;
     }
-    if (editServices.length === 0) { setEditError('Selecione ao menos um serviço.'); return; }
+    if (editServices.length === 0) { setEditError('Selecione ao menos um serviÃ§o.'); return; }
     setEditSaving(true);
     setEditError(null);
     try {
@@ -136,7 +132,7 @@ export const Dashboard: React.FC = () => {
         options.reason = reason;
       }
       if (editStatus === 'Confirmado' && daysUntil(editDate) < MIN_BOOK_DAYS) {
-        const aware = window.confirm('Estou ciente de que este agendamento será confirmado com menos de 5 dias de antecedência. Deseja continuar?');
+        const aware = window.confirm('Estou ciente de que este agendamento serÃ¡ confirmado com menos de 5 dias de antecedÃªncia. Deseja continuar?');
         if (!aware) { setEditSaving(false); return; }
         options.awareShortNotice = true;
       }
@@ -174,7 +170,7 @@ export const Dashboard: React.FC = () => {
             </Text>
           </View>
 
-          {/* ── Summary cards ─────────────────────────────────────────────── */}
+          {/* â”€â”€ Summary cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <View className="flex-row flex-wrap gap-4 mb-10">
             {/* Ganhos do Dia */}
             <TouchableOpacity
@@ -186,7 +182,7 @@ export const Dashboard: React.FC = () => {
               <View>
                 <Text className="text-xs font-serif text-[#68597a]">R$</Text>
                 <Text className="text-3xl font-serif text-[#68597a]">
-                  {loading ? '—' : formatBRL(stats.dailyRevenue)}
+                  {loading ? 'â€”' : formatBRL(stats.dailyRevenue)}
                 </Text>
               </View>
               <View className="flex-row items-center">
@@ -205,7 +201,7 @@ export const Dashboard: React.FC = () => {
             >
               <Text className="text-[10px] font-bold uppercase tracking-widest text-[#524362]">Clientes</Text>
               <Text className="text-3xl font-serif text-[#524362]">
-                {loading ? '—' : stats.totalClients}
+                {loading ? 'â€”' : stats.totalClients}
               </Text>
               <View className="flex-row items-center">
                 <Users size={12} color="#524362" />
@@ -217,7 +213,7 @@ export const Dashboard: React.FC = () => {
 
           </View>
 
-          {/* ── Appointments list ──────────────────────────────────────────── */}
+          {/* â”€â”€ Appointments list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <View className="mb-8 flex-row justify-between items-end">
             <Text className="text-2xl font-serif text-[#35313a]">Agendamentos da Semana</Text>
             <TouchableOpacity onPress={() => navigationRef.navigate('Agenda' as never)}>
@@ -227,7 +223,7 @@ export const Dashboard: React.FC = () => {
 
           <View className="mb-20">
             {loading && (
-              <Text className="text-[#625d67] text-sm text-center py-8">Carregando…</Text>
+              <Text className="text-[#625d67] text-sm text-center py-8">Carregandoâ€¦</Text>
             )}
             {!loading && appointments.length === 0 && (
               <Text className="text-[#625d67] text-sm text-center py-8">Nenhum agendamento para esta semana.</Text>
@@ -261,7 +257,7 @@ export const Dashboard: React.FC = () => {
                     )}
                     <View className="flex-1">
                       <Text className="text-[10px] font-bold uppercase tracking-widest text-[#625d67] mb-1">
-                        {dateLabel} · {timeLabel}
+                        {dateLabel} Â· {timeLabel}
                       </Text>
                       <Text className="text-lg font-serif text-[#35313a]">{apt.client?.name}</Text>
                       <Text className="text-xs text-[#625d67]" numberOfLines={1}>{apt.service}</Text>
@@ -285,9 +281,9 @@ export const Dashboard: React.FC = () => {
                           const waNumber = toWhatsappNumber(apt.client!.phone!);
                           const dateFormatted = new Date(apt.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
                           const msg = encodeURIComponent(
-                            `Olá ${apt.client!.name}! 💜 Lembrando do seu agendamento no ${salonName}:\n` +
-                            `📅 ${dateFormatted} às ${formatTime(apt.time_start)}\n` +
-                            `✂️ ${apt.service}\n\nQualquer dúvida, estamos à disposição!`
+                            `OlÃ¡ ${apt.client!.name}! ðŸ’œ Lembrando do seu agendamento no ${salonName}:\n` +
+                            `ðŸ“… ${dateFormatted} Ã s ${formatTime(apt.time_start)}\n` +
+                            `âœ‚ï¸ ${apt.service}\n\nQualquer dÃºvida, estamos Ã  disposiÃ§Ã£o!`
                           );
                           window.open(`https://wa.me/${waNumber}?text=${msg}`, '_blank');
                         }}
@@ -303,7 +299,7 @@ export const Dashboard: React.FC = () => {
                           openEdit(apt);
                         }}
                         style={{ marginTop: 8, backgroundColor: '#e8e0ec', borderRadius: 20, padding: 6 }}
-                        accessibilityLabel="Sem telefone — edite o cliente para adicionar"
+                        accessibilityLabel="Sem telefone â€” edite o cliente para adicionar"
                       >
                         <MessageCircle size={14} color="#625d67" />
                       </TouchableOpacity>
@@ -321,15 +317,15 @@ export const Dashboard: React.FC = () => {
             })}
           </View>
 
-          {/* ── Birthdays ───────────────────────────────────────────────── */}
+          {/* â”€â”€ Birthdays â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <View className="mb-8 bg-[#fff7d6] rounded-[24px] p-5">
             <Text className="text-[10px] font-bold uppercase tracking-widest text-[#644f00] mb-2">
-              Aniversariantes do mês
+              Aniversariantes do mÃªs
             </Text>
             {clientsLoading ? (
-              <Text className="text-[#644f00] text-sm">Carregando…</Text>
+              <Text className="text-[#644f00] text-sm">Carregandoâ€¦</Text>
             ) : birthdaysThisMonth.length === 0 ? (
-              <Text className="text-[#644f00] text-sm">Nenhum aniversariante este mês.</Text>
+              <Text className="text-[#644f00] text-sm">Nenhum aniversariante este mÃªs.</Text>
             ) : (
               birthdaysThisMonth.slice(0, 6).map(({ client, birth }) => (
                 <View key={client.id} className="flex-row items-center justify-between py-2">
@@ -348,7 +344,7 @@ export const Dashboard: React.FC = () => {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* ── Action sheet ──────────────────────────────────────────────────── */}
+      {/* â”€â”€ Action sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Modal visible={!!actionApt} transparent animationType="slide" onRequestClose={() => setActionApt(null)}>
         <View style={{ flex: 1 }}>
           <TouchableOpacity
@@ -357,7 +353,7 @@ export const Dashboard: React.FC = () => {
           />
           <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#fef7fe', borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 32 }}>
             <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#35313a', marginBottom: 4 }}>{actionApt?.client?.name}</Text>
-            <Text style={{ fontSize: 12, color: '#625d67', marginBottom: 24 }}>{actionApt?.service} • {formatTime(actionApt?.time_start)} – {formatTime(actionApt?.time_end)}</Text>
+            <Text style={{ fontSize: 12, color: '#625d67', marginBottom: 24 }}>{actionApt?.service} â€¢ {formatTime(actionApt?.time_start)} â€“ {formatTime(actionApt?.time_end)}</Text>
 
             <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12 }}>Alterar status</Text>
             {(['Aguardando', 'Confirmado', 'Cancelado'] as const).map(s => (
@@ -372,7 +368,7 @@ export const Dashboard: React.FC = () => {
                       if (!reason) return;
                       await updateAppointmentStatus(aptId, s, { urgent: true, reason });
                     } else if (s === 'Confirmado' && daysUntil(actionApt.date) < MIN_BOOK_DAYS) {
-                      const aware = window.confirm('Estou ciente de que este agendamento será confirmado com menos de 5 dias de antecedência. Deseja continuar?');
+                      const aware = window.confirm('Estou ciente de que este agendamento serÃ¡ confirmado com menos de 5 dias de antecedÃªncia. Deseja continuar?');
                       if (!aware) return;
                       await updateAppointmentStatus(aptId, s, { awareShortNotice: true });
                     } else {
@@ -401,7 +397,7 @@ export const Dashboard: React.FC = () => {
                 setActionApt(null);
                 if (!apt) return;
                 if (apt.status === 'Confirmado') {
-                  window.alert('Agendamento confirmado não pode ser editado.');
+                  window.alert('Agendamento confirmado nÃ£o pode ser editado.');
                   return;
                 }
                 openEdit(apt);
@@ -421,7 +417,7 @@ export const Dashboard: React.FC = () => {
         </View>
       </Modal>
 
-      {/* ── Edit modal ────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Edit modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Modal visible={!!editApt} transparent animationType="slide" onRequestClose={() => setEditApt(null)}>
         <View style={{ flex: 1, backgroundColor: 'rgba(53,49,58,0.5)', justifyContent: 'flex-end' }}>
           <View style={{ backgroundColor: '#fef7fe', borderTopLeftRadius: 32, borderTopRightRadius: 32, maxHeight: '92%' }}>
@@ -451,8 +447,8 @@ export const Dashboard: React.FC = () => {
                 ))}
               </View>
 
-              {/* Serviço */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-3">Serviço *</Text>
+              {/* ServiÃ§o */}
+              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-3">ServiÃ§o *</Text>
               {serviceCategories.filter(c => c.status === 'active').length > 0 ? (
                 <View className={`flex-row flex-wrap gap-2 mb-6 ${isConfirmedEdit ? 'opacity-50' : ''}`}>
                   {serviceCategories.filter(c => c.status === 'active').map(cat => {
@@ -478,15 +474,15 @@ export const Dashboard: React.FC = () => {
                 <TextInput
                   value={editServices.join(', ')}
                   onChangeText={v => setEditServices(v ? [v] : [])}
-                  placeholder="Ex: Coloração, Corte…"
+                  placeholder="Ex: ColoraÃ§Ã£o, Corteâ€¦"
                   placeholderTextColor="#625d6766"
                   editable={!isConfirmedEdit}
                   className="bg-[#e8e0ec] rounded-2xl px-4 py-4 text-[#35313a] mb-6"
                 />
               )}
 
-              {/* Valor do Serviço */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2 mt-2">Valor do Serviço</Text>
+              {/* Valor do ServiÃ§o */}
+              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2 mt-2">Valor do ServiÃ§o</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#e8e0ec', borderRadius: 16, paddingHorizontal: 16, marginBottom: 24, opacity: isConfirmedEdit ? 0.5 : 1 }}>
                 <Text style={{ color: '#625d67', fontSize: 13 }}>R$</Text>
                 <TextInput
@@ -515,10 +511,10 @@ export const Dashboard: React.FC = () => {
                 }}
               />
 
-              {/* Horários */}
+              {/* HorÃ¡rios */}
               <View className="flex-row gap-4 mb-8">
                 <View className="flex-1">
-                  <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">Início</Text>
+                  <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">InÃ­cio</Text>
                   <input
                     type="time"
                     value={editTimeStart}
@@ -533,7 +529,7 @@ export const Dashboard: React.FC = () => {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">Término</Text>
+                  <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">TÃ©rmino</Text>
                   <input
                     type="time"
                     value={editTimeEnd}
@@ -570,7 +566,7 @@ export const Dashboard: React.FC = () => {
                   disabled={editSaving}
                   className={`flex-1 py-4 rounded-full items-center ${editSaving ? 'bg-[#68597a80]' : 'bg-[#68597a]'}`}
                 >
-                  <Text className="text-white font-bold text-sm">{editSaving ? 'Salvando…' : 'Salvar'}</Text>
+                  <Text className="text-white font-bold text-sm">{editSaving ? 'Salvandoâ€¦' : 'Salvar'}</Text>
                 </TouchableOpacity>
               </View>
             </ScrollView>

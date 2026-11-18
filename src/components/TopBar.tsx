@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { Bell, Menu, ChevronLeft, UserCircle, X, Check, House } from 'lucide-react-native';
 import { useDrawer } from '../lib/DrawerContext';
@@ -6,7 +6,7 @@ import { useAuth } from '../lib/AuthContext';
 import { usePendingAppointments, updateAppointmentStatus } from '../lib/hooks/useAppointments';
 import { useSalonSettings } from '../lib/hooks/useSalonSettings';
 import { navigationRef } from '../lib/navigationRef';
-import { formatTime } from '../lib/utils';
+import { formatTime, displayName } from '../lib/utils';
 
 interface TopBarProps {
   onBack?: () => void;
@@ -37,12 +37,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onBack, title }) => {
   const [showPanel, setShowPanel] = useState(false);
 
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
-  const initials = (user?.email ?? '?').slice(0, 1).toUpperCase();
+  const initials = displayName(user).slice(0, 1).toUpperCase();
   const showHomeShortcut = !!onBack || !!title;
 
   async function confirm(id: string, date: string) {
     if (daysUntil(date) < MIN_BOOK_DAYS) {
-      const aware = window.confirm('Estou ciente de que este agendamento será confirmado com menos de 5 dias de antecedência. Deseja continuar?');
+      const aware = window.confirm('Estou ciente de que este agendamento serÃ¡ confirmado com menos de 5 dias de antecedÃªncia. Deseja continuar?');
       if (!aware) return;
       await updateAppointmentStatus(id, 'Confirmado', { awareShortNotice: true });
       return;
@@ -52,14 +52,14 @@ export const TopBar: React.FC<TopBarProps> = ({ onBack, title }) => {
 
   return (
     <View className="absolute top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md px-4 py-4 flex-row items-center border-b border-[#b7afbb26]">
-      {/* Canto esquerdo — hamburguer ou botão voltar */}
+      {/* Canto esquerdo â€” hamburguer ou botÃ£o voltar */}
       {onBack ? (
         <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 8 }}>
           <TouchableOpacity onPress={onBack} className="p-1 mr-2">
             <ChevronLeft size={24} color="#68597a" />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigationRef.isReady() && navigationRef.navigate('Main' as never, { screen: 'Início' } as never)}
+            onPress={() => navigationRef.isReady() && navigationRef.navigate('Main' as never, { screen: 'InÃ­cio' } as never)}
             style={{ padding: 6, borderRadius: 20, backgroundColor: '#f9f1fa' }}
           >
             <House size={18} color="#68597a" />
@@ -72,7 +72,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onBack, title }) => {
           </TouchableOpacity>
           {showHomeShortcut && (
             <TouchableOpacity
-              onPress={() => navigationRef.isReady() && navigationRef.navigate('Main' as never, { screen: 'Início' } as never)}
+              onPress={() => navigationRef.isReady() && navigationRef.navigate('Main' as never, { screen: 'InÃ­cio' } as never)}
               style={{ padding: 6, borderRadius: 20, backgroundColor: '#f9f1fa' }}
             >
               <House size={18} color="#68597a" />
@@ -81,12 +81,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onBack, title }) => {
         </View>
       )}
 
-      {/* Título — ocupa o espaço restante */}
+      {/* TÃ­tulo â€” ocupa o espaÃ§o restante */}
       <Text className="flex-1 text-xl font-bold tracking-tight text-[#68597a] italic">
         {displayTitle}
       </Text>
 
-      {/* Canto direito — ações */}
+      {/* Canto direito â€” aÃ§Ãµes */}
       <View className="flex-row items-center gap-3">
         {/* Sino com badge */}
         <TouchableOpacity
@@ -124,7 +124,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onBack, title }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Painel de notificações */}
+      {/* Painel de notificaÃ§Ãµes */}
       <Modal visible={showPanel} transparent animationType="fade" onRequestClose={() => setShowPanel(false)}>
         <TouchableOpacity
           style={{ flex: 1, backgroundColor: '#00000040' }}
@@ -145,7 +145,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onBack, title }) => {
               borderBottomWidth: 1, borderBottomColor: '#e8e0ec',
             }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: '#35313a' }}>
-                Confirmações pendentes
+                ConfirmaÃ§Ãµes pendentes
               </Text>
               <TouchableOpacity onPress={() => setShowPanel(false)}>
                 <X size={18} color="#625d67" />
@@ -154,7 +154,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onBack, title }) => {
 
             {pending.length === 0 ? (
               <View style={{ padding: 32, alignItems: 'center' }}>
-                <Text style={{ color: '#625d67', fontSize: 14 }}>Nenhum agendamento aguardando 🎉</Text>
+                <Text style={{ color: '#625d67', fontSize: 14 }}>Nenhum agendamento aguardando ðŸŽ‰</Text>
               </View>
             ) : (
               <ScrollView style={{ maxHeight: 380 }}>
@@ -167,10 +167,10 @@ export const TopBar: React.FC<TopBarProps> = ({ onBack, title }) => {
                     {/* Info */}
                     <View style={{ flex: 1 }}>
                       <Text style={{ fontWeight: '700', fontSize: 14, color: '#35313a' }}>
-                        {apt.client?.name ?? '—'}
+                        {apt.client?.name ?? 'â€”'}
                       </Text>
                       <Text style={{ fontSize: 12, color: '#625d67', marginTop: 2 }}>
-                        {formatDate(apt.date)} às {formatTime(apt.time_start)}
+                        {formatDate(apt.date)} Ã s {formatTime(apt.time_start)}
                       </Text>
                       <Text style={{ fontSize: 11, color: '#68597a', marginTop: 1 }} numberOfLines={1}>
                         {apt.service}

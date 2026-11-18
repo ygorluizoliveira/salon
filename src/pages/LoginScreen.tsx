@@ -33,6 +33,7 @@ export function LoginScreen() {
   const [tab, setTab]           = useState<Tab>('login');
   const [email, setEmail]       = useState('');
   const [name, setName]         = useState('');
+  const [gender, setGender]     = useState<'F' | 'M' | 'O' | ''>('');
   const [cpf, setCpf]           = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm]   = useState('');
@@ -48,6 +49,7 @@ export function LoginScreen() {
     setEmail('');
     setName('');
     setCpf('');
+    setGender('');
     setPassword('');
     setConfirm('');
     setForgotMode(false);
@@ -92,6 +94,10 @@ export function LoginScreen() {
         setError('Informe seu nome.');
         return;
       }
+      if (!gender) {
+        setError('Selecione uma opção de sexo.');
+        return;
+      }
       if (!isValidCpf(cpf)) {
         setError('CPF inválido.');
         return;
@@ -107,7 +113,7 @@ export function LoginScreen() {
     }
     setLoading(true);
     const err = tab === 'signup'
-      ? await signUp(email.trim(), password, name.trim(), cpf.replace(/\D/g, ''))
+      ? await signUp(email.trim(), password, name.trim(), cpf.replace(/\D/g, ''), gender || 'O')
       : await signIn(email.trim(), password);
     if (err) setError(err);
     setLoading(false);
@@ -195,6 +201,22 @@ export function LoginScreen() {
                 fontSize: 15, color: '#35313a',
               }}
             />
+          </View>
+          )}
+
+          {tab === 'signup' && !forgotMode && (
+          <View>
+            <Text style={{ fontSize: 10, fontWeight: '700', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8 }}>
+              Sexo
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              {([['F', 'Feminino'], ['M', 'Masculino'], ['O', 'Prefiro não informar']] as const).map(([val, label]) => (
+                <TouchableOpacity key={val} onPress={() => setGender(val)}
+                  style={{ flex: 1, paddingVertical: 12, paddingHorizontal: 4, borderRadius: 16, alignItems: 'center', backgroundColor: gender === val ? '#68597a' : '#f9f1fa' }}>
+                  <Text style={{ fontWeight: '700', fontSize: 12, textAlign: 'center', color: gender === val ? '#fff' : '#625d67' }}>{label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
           )}
 
