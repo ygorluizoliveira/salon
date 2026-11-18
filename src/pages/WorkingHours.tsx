@@ -245,12 +245,15 @@ export default function WorkingHours({ navigation }: any) {
                     <Text style={{ fontSize: 12, color: row.active ? '#68597a' : '#b7afbb', fontWeight: '600' }}>
                       {row.active ? 'Aberto' : 'Fechado'}
                     </Text>
-                    <Switch
-                      value={row.active}
-                      onValueChange={v => setRow(dow, { active: v })}
-                      trackColor={{ false: '#e8e0ec', true: '#c1aee0' }}
-                      thumbColor={row.active ? '#68597a' : '#f0e9f8'}
-                    />
+                    <View style={{ minWidth: 56, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}>
+                      <Switch
+                        value={row.active}
+                        onValueChange={v => setRow(dow, { active: v })}
+                        trackColor={{ false: '#cfc6d4', true: '#c1aee0' }}
+                        thumbColor={row.active ? '#68597a' : '#f0e9f8'}
+                        style={{ transform: [{ scale: 1.3 }] }}
+                      />
+                    </View>
                   </View>
                 </View>
 
@@ -310,6 +313,6 @@ export default function WorkingHours({ navigation }: any) {
 
 const labelStyle = { fontSize: 10, fontWeight: '700' as const, color: '#625d67', textTransform: 'uppercase' as const, letterSpacing: 1.5, marginBottom: 6 };
 const inputStyle = {
-  backgroundColor: '#f0e9f8', borderRadius: 12, padding: 12,
+  backgroundColor: '#fff', borderRadius: 12, padding: 12, border: '1.5px solid #b7afbb', minHeight: 48,
   fontSize: 16, color: '#35313a', textAlign: 'center' as const, fontWeight: '700' as const,
 };

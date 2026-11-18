@@ -356,6 +356,7 @@ export function ClientBooking() {
           <label style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#7a4a27', fontWeight: 700, fontSize: 13 }}>
             <input
               type="checkbox"
+              style={{ width: 22, height: 22 }}
               checked={emergencyRequest}
               onChange={(e) => setEmergencyRequest(e.target.checked)}
             />

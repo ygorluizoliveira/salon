@@ -86,11 +86,11 @@ export const Finance: React.FC = () => {
             <View className="bg-[#68597a] p-8 rounded-[32px] shadow-xl min-h-[220px] justify-between">
               <View>
                 <View className="flex-row items-center justify-between">
-                  <Text className="text-[10px] opacity-80 uppercase tracking-widest font-bold text-white">
+                  <Text className="text-xs opacity-80 uppercase tracking-widest font-bold text-white">
                     Faturamento Mensal
                   </Text>
                   <View className="bg-white/20 px-3 py-1 rounded-full">
-                    <Text className="text-white text-[10px] font-bold">
+                    <Text className="text-white text-xs font-bold">
                       {loading ? '…' : `${stats.monthlyGrowthPct >= 0 ? '+' : ''}${stats.monthlyGrowthPct}%`}
                     </Text>
                   </View>
@@ -109,7 +109,7 @@ export const Finance: React.FC = () => {
             <View className="flex-row gap-4 mt-6">
               <View className="flex-1 p-6 rounded-3xl bg-[#e8e0ec] flex-row items-center justify-between">
                 <View>
-                  <Text className="text-[8px] font-bold text-[#625d67] mb-1 uppercase tracking-wider">Entradas</Text>
+                  <Text className="text-[11px] font-bold text-[#625d67] mb-1 uppercase tracking-wider">Entradas</Text>
                   <Text className="text-base font-bold text-[#3a6264]">
                     {loading ? '—' : `R$ ${formatBRL(stats.totalIncome)}`}
                   </Text>
@@ -121,7 +121,7 @@ export const Finance: React.FC = () => {
 
               <View className="flex-1 p-6 rounded-3xl bg-[#e8e0ec] flex-row items-center justify-between">
                 <View>
-                  <Text className="text-[8px] font-bold text-[#625d67] mb-1 uppercase tracking-wider">Saídas</Text>
+                  <Text className="text-[11px] font-bold text-[#625d67] mb-1 uppercase tracking-wider">Saídas</Text>
                   <Text className="text-base font-bold text-[#ba1a1a]">
                     {loading ? '—' : `R$ ${formatBRL(stats.totalExpense)}`}
                   </Text>
@@ -162,7 +162,7 @@ export const Finance: React.FC = () => {
               <View className="flex-row justify-between items-center mb-8">
                 <Text className="font-serif text-xl font-bold text-[#68597a] italic">Transações</Text>
                 <TouchableOpacity>
-                  <Text className="text-[#68597a] text-[10px] font-bold uppercase tracking-widest">Ver Tudo</Text>
+                  <Text className="text-[#68597a] text-xs font-bold uppercase tracking-widest">Ver Tudo</Text>
                 </TouchableOpacity>
               </View>
               {loading && <Text className="text-[#625d67] text-sm">Carregando…</Text>}
@@ -176,13 +176,13 @@ export const Finance: React.FC = () => {
                   </View>
                   <View className="flex-1">
                     <Text className="font-bold text-sm text-[#35313a]">{t.title}</Text>
-                    <Text className="text-[10px] text-[#625d67]">{t.subtitle}</Text>
+                    <Text className="text-xs text-[#625d67]">{t.subtitle}</Text>
                   </View>
                   <View className="items-end">
                     <Text className={`font-bold text-sm ${t.type === 'income' ? 'text-[#3a6264]' : 'text-[#ba1a1a]'}`}>
                       {t.type === 'income' ? '+ ' : '- '}R$ {formatBRL(t.amount)}
                     </Text>
-                    <Text className="text-[8px] text-[#625d67] uppercase font-bold">
+                    <Text className="text-[11px] text-[#625d67] uppercase font-bold">
                       {new Date(t.occurred_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </Text>
                   </View>
@@ -239,7 +239,7 @@ export const Finance: React.FC = () => {
               ))}
             </View>
 
-            <Text className="text-[10px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Título *</Text>
+            <Text className="text-xs font-bold text-[#625d67] mb-2 uppercase tracking-wider">Título *</Text>
             <TextInput
               value={fTitle}
               onChangeText={setFTitle}
@@ -250,7 +250,7 @@ export const Finance: React.FC = () => {
 
             <View className="flex-row gap-3 mb-4">
               <View className="flex-1">
-                <Text className="text-[10px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Valor (R$) *</Text>
+                <Text className="text-xs font-bold text-[#625d67] mb-2 uppercase tracking-wider">Valor (R$) *</Text>
                 <TextInput
                   value={fAmount}
                   onChangeText={setFAmount}
@@ -261,7 +261,7 @@ export const Finance: React.FC = () => {
                 />
               </View>
               <View className="flex-1">
-                <Text className="text-[10px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Data</Text>
+                <Text className="text-xs font-bold text-[#625d67] mb-2 uppercase tracking-wider">Data</Text>
                 <input
                   type="date"
                   value={fDate}
@@ -275,7 +275,7 @@ export const Finance: React.FC = () => {
               </View>
             </View>
 
-            <Text className="text-[10px] font-bold text-[#625d67] mb-2 uppercase tracking-wider">Categoria</Text>
+            <Text className="text-xs font-bold text-[#625d67] mb-2 uppercase tracking-wider">Categoria</Text>
             <TextInput
               value={fCategory}
               onChangeText={setFCategory}

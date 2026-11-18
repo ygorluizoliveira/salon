@@ -67,7 +67,7 @@ function CategoryCard({ item, onToggle, onDelete, onEdit }: CategoryCardProps) {
           {isActive
             ? <Check size={10} color="#3a6264" />
             : <X size={10} color="#ba1a1a" />}
-          <Text className={`text-[9px] font-bold uppercase ${isActive ? 'text-[#3a6264]' : 'text-[#ba1a1a]'}`}>
+          <Text className={`text-[11px] font-bold uppercase ${isActive ? 'text-[#3a6264]' : 'text-[#ba1a1a]'}`}>
             {isActive ? 'Ativo' : 'Inativo'}
           </Text>
         </TouchableOpacity>
