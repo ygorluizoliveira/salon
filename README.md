@@ -15,6 +15,14 @@ View your app in AI Studio: https://ai.studio/apps/d740d859-4d67-46b5-bf68-cf45a
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev` 
+2. Copy `.env.example` to `.env` (git-ignored) and set:
+   - `VITE_SUPABASE_URL` – your Supabase project URL
+   - `VITE_SUPABASE_ANON_KEY` – the Supabase **anon** public key
+
+   Never put the `service_role` key in the front-end or in any committed file.
+   Without these variables the app renders a blank screen.
+3. Run the app (http://localhost:3000):
+   `npm run dev`
+   (On Windows PowerShell, use `npm.cmd run dev` if `npm.ps1` is blocked.)
+4. Production build: `npm run build` (output in `dist/`), preview with `npm run preview`.
+   Restart the dev server after changing `.env`.
