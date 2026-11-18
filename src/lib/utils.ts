@@ -47,3 +47,23 @@ export function formatTime(t?: string | null): string {
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+/** Máscara de telefone BR: (11) 99999-9999 / (11) 9999-9999 (máx. 11 dígitos). */
+export function maskPhone(v: string): string {
+  const d = v.replace(/\D/g, '').slice(0, 11);
+  if (d.length > 10) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  if (d.length > 6) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  if (d.length > 2) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  return d;
+}
+
+/** Válido: DDD 11–99 + 8 dígitos (fixo) ou 9 dígitos começando em 9 (celular). */
+export function isValidPhone(v: string): boolean {
+  const d = v.replace(/\D/g, '');
+  const ddd = Number(d.slice(0, 2));
+  if (ddd < 11 || ddd > 99) return false;
+  if (d.length === 10) return true;
+  return d.length === 11 && d[2] === '9';
+}
+
+export const PHONE_ERROR = 'Telefone inválido.';

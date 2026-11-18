@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Building2, PlusCircle, Trash2, Verified, Flower2, Package, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { MotiView } from 'moti';
@@ -180,6 +181,10 @@ export const NewSupplier: React.FC = () => {
       Alert.alert('Campo obrigatório', 'Por favor, informe o nome da empresa.');
       return;
     }
+    if (phone.trim() && !isValidPhone(phone)) {
+      Alert.alert('Campo inválido', PHONE_ERROR);
+      return;
+    }
     setSaving(true);
     try {
       await addSupplier({
@@ -299,7 +304,7 @@ export const NewSupplier: React.FC = () => {
                 <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Telefone / WhatsApp</Text>
                 <TextInput
                   value={phone}
-                  onChangeText={setPhone}
+                  onChangeText={v => setPhone(maskPhone(v))}
                   placeholder="(11) 98765-4321"
                   placeholderTextColor="#625d6766"
                   className="bg-[#f9f1fa] rounded-2xl px-4 py-4 text-[#35313a]"
