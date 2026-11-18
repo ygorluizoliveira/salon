@@ -23,6 +23,9 @@ export function ClientLogin() {
 
   // Register state
   const [inviteToken, setInviteToken] = useState(initialToken);
+  const [regName, setRegName] = useState('');
+  const [regPhone, setRegPhone] = useState('');
+  const [regAddress, setRegAddress] = useState('');
   const [regEmail, setRegEmail]     = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regPassword2, setRegPassword2] = useState('');
@@ -54,10 +57,11 @@ export function ClientLogin() {
     setError(null);
     if (regPassword !== regPassword2) { setError('As senhas não coincidem.'); return; }
     if (regPassword.length < 8 || regPassword.length > 72) { setError('A senha deve ter entre 8 e 72 caracteres.'); return; }
-    if (!inviteToken.trim() || !regEmail.trim()) { setError('Informe o código do convite e o e-mail.'); return; }
+    if (!inviteToken.trim()) { setError('Link de convite ausente. Peça um novo link ao salão.'); return; }
+    if (!regName.trim() || !regPhone.trim() || !regEmail.trim()) { setError('Preencha nome, telefone e e-mail.'); return; }
     setLoading(true);
     try {
-      await registerWithInvite(inviteToken, regEmail, regPassword);
+      await registerWithInvite({ token: inviteToken, name: regName, phone: regPhone, email: regEmail, password: regPassword, address: regAddress });
     } catch (err: any) { setError(err.message); }
     finally { setLoading(false); }
   }
@@ -99,13 +103,26 @@ export function ClientLogin() {
         {mode === 'register' && (
           <View>
             <Text style={{ color: '#625d67', fontSize: 13, marginBottom: 14 }}>
-              O cadastro é feito apenas por convite. Use o código ou link enviado pelo salão.
+              O cadastro é feito apenas por convite (link válido por 15 minutos).
             </Text>
-            <Text style={labelStyle}>Código do convite</Text>
-            <TextInput value={inviteToken} onChangeText={setInviteToken} placeholder="Cole o código" style={inputStyle} autoCapitalize="none" autoCorrect={false} />
+            {!initialToken && (
+              <>
+                <Text style={labelStyle}>Código do convite</Text>
+                <TextInput value={inviteToken} onChangeText={setInviteToken} placeholder="Cole o código" style={inputStyle} autoCapitalize="none" autoCorrect={false} />
+                <View style={{ height: 14 }} />
+              </>
+            )}
+            <Text style={labelStyle}>Nome completo</Text>
+            <TextInput value={regName} onChangeText={setRegName} placeholder="Seu nome" style={inputStyle} />
+
+            <Text style={{ ...labelStyle, marginTop: 14 }}>Telefone / WhatsApp</Text>
+            <TextInput value={regPhone} onChangeText={setRegPhone} placeholder="(11) 99999-9999" style={inputStyle} inputMode="tel" />
 
             <Text style={{ ...labelStyle, marginTop: 14 }}>E-mail</Text>
             <TextInput value={regEmail} onChangeText={setRegEmail} placeholder="seu@email.com" style={inputStyle} autoCapitalize="none" keyboardType="email-address" />
+
+            <Text style={{ ...labelStyle, marginTop: 14 }}>Endereço (opcional)</Text>
+            <TextInput value={regAddress} onChangeText={setRegAddress} placeholder="Rua, número, bairro, cidade" style={inputStyle} />
 
             <Text style={{ ...labelStyle, marginTop: 14 }}>Senha</Text>
             <TextInput value={regPassword} onChangeText={setRegPassword} placeholder="8 a 72 caracteres" style={inputStyle} secureTextEntry />

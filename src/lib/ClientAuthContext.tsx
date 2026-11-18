@@ -5,12 +5,16 @@ import type { Client } from './types';
 import { authenticateWithPasskey } from './hooks/useWebAuthn';
 import { storageGet, storageRemove, storageSet } from './platform';
 
+export interface InviteRegistration {
+  token: string; name: string; phone: string; email: string; password: string; address?: string;
+}
+
 interface ClientAuthState {
   client: Client | null;
   loading: boolean;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signInWithPasskey: (clientId: string) => Promise<boolean>;
-  registerWithInvite: (token: string, email: string, password: string) => Promise<void>;
+  registerWithInvite: (f: InviteRegistration) => Promise<void>;
   signOut: () => void;
   error: string | null;
 }
@@ -83,13 +87,13 @@ export function ClientAuthProvider({ children }: { children: React.ReactNode }) 
     return false;
   }
 
-  async function registerWithInvite(token: string, email: string, password: string) {
+  async function registerWithInvite(f: InviteRegistration) {
     setError(null);
     const generic = 'Convite inválido, expirado ou já utilizado. Peça um novo convite ao salão.';
     let res;
     try {
       res = await withTimeout(
-        supabase.functions.invoke('register-client', { body: { token: token.trim(), email: email.trim(), password } }),
+        supabase.functions.invoke('register-client', { body: { token: f.token.trim(), name: f.name.trim(), phone: f.phone.trim(), email: f.email.trim(), password: f.password, address: f.address?.trim() || undefined } }),
       );
     } catch (e: any) {
       throw new Error(translateAuthError(e?.message));
@@ -102,7 +106,7 @@ export function ClientAuthProvider({ children }: { children: React.ReactNode }) 
       throw new Error(translateAuthError(res.error.message));
     }
     if (!res.data?.ok) throw new Error(generic);
-    await signInWithEmail(email.trim(), password);
+    await signInWithEmail(f.email.trim(), f.password);
   }
   const signOut = useCallback(() => {
     setClient(null);
