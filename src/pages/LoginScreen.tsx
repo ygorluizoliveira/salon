@@ -7,13 +7,33 @@ import { useSalonSettings } from '../lib/hooks/useSalonSettings';
 
 type Tab = 'login' | 'signup';
 
+function maskCpf(v: string) {
+  const d = v.replace(/\D/g, '').slice(0, 11);
+  if (d.length > 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+  if (d.length > 6) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
+  if (d.length > 3) return `${d.slice(0, 3)}.${d.slice(3)}`;
+  return d;
+}
+
+function isValidCpf(v: string) {
+  const d = v.replace(/\D/g, '');
+  if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
+  for (const len of [9, 10]) {
+    let sum = 0;
+    for (let i = 0; i < len; i++) sum += Number(d[i]) * (len + 1 - i);
+    const dv = ((sum * 10) % 11) % 10;
+    if (dv !== Number(d[len])) return false;
+  }
+  return true;
+}
+
 export function LoginScreen() {
-  const { signIn, resetPassword } = useAuth();
+  const { signIn, signUp, resetPassword } = useAuth();
   const { salonName } = useSalonSettings();
   const [tab, setTab]           = useState<Tab>('login');
   const [email, setEmail]       = useState('');
   const [name, setName]         = useState('');
-  const [gender, setGender]     = useState<'F' | 'M' | ''>('');
+  const [cpf, setCpf]           = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm]   = useState('');
   const [error, setError]       = useState<string | null>(null);
@@ -27,7 +47,7 @@ export function LoginScreen() {
     setSuccess(null);
     setEmail('');
     setName('');
-    setGender('');
+    setCpf('');
     setPassword('');
     setConfirm('');
     setForgotMode(false);
@@ -72,8 +92,12 @@ export function LoginScreen() {
         setError('Informe seu nome.');
         return;
       }
-      if (password.length < 6) {
-        setError('A senha deve ter pelo menos 6 caracteres.');
+      if (!isValidCpf(cpf)) {
+        setError('CPF inválido.');
+        return;
+      }
+      if (password.length < 8 || password.length > 72) {
+        setError('A senha deve ter entre 8 e 72 caracteres.');
         return;
       }
       if (password !== confirm) {
@@ -82,7 +106,9 @@ export function LoginScreen() {
       }
     }
     setLoading(true);
-    const err = await signIn(email.trim(), password);
+    const err = tab === 'signup'
+      ? await signUp(email.trim(), password, name.trim(), cpf.replace(/\D/g, ''))
+      : await signIn(email.trim(), password);
     if (err) setError(err);
     setLoading(false);
   }
@@ -126,7 +152,14 @@ export function LoginScreen() {
           </Text>
         </View>
 
-        {/* Cadastro desativado: gestão é restrita a administradores */}
+        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
+          {([['login', 'Entrar'], ['signup', 'Criar conta']] as const).map(([t, label]) => (
+            <TouchableOpacity key={t} onPress={() => switchTab(t)}
+              style={{ flex: 1, paddingVertical: 10, borderRadius: 50, alignItems: 'center', backgroundColor: tab === t ? '#68597a' : '#e8e0ec' }}>
+              <Text style={{ fontWeight: '700', color: tab === t ? '#fff' : '#625d67' }}>{label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
         {/* Form */}
         <View style={{
@@ -165,34 +198,29 @@ export function LoginScreen() {
           </View>
           )}
 
-          {/* Gênero — só no cadastro */}
+          {/* CPF — só no cadastro */}
           {tab === 'signup' && !forgotMode && (
           <View>
             <Text style={{
               fontSize: 10, fontWeight: '700', color: '#625d67',
               textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8,
             }}>
-              Sou
+              CPF
             </Text>
-            <View style={{ flexDirection: 'row', gap: 10 }}>
-              {([['F', 'Feminino'], ['M', 'Masculino']] as const).map(([val, label]) => (
-                <TouchableOpacity
-                  key={val}
-                  onPress={() => setGender(val)}
-                  style={{
-                    flex: 1, paddingVertical: 12, borderRadius: 16, alignItems: 'center',
-                    backgroundColor: gender === val ? '#68597a' : '#f9f1fa',
-                  }}
-                >
-                  <Text style={{ fontWeight: '700', fontSize: 14, color: gender === val ? '#fff' : '#625d67' }}>
-                    {label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            <TextInput
+              value={cpf}
+              onChangeText={v => setCpf(maskCpf(v))}
+              placeholder="000.000.000-00"
+              inputMode="numeric"
+              maxLength={14}
+              style={{
+                backgroundColor: '#f9f1fa', borderRadius: 16,
+                paddingHorizontal: 16, paddingVertical: 14,
+                fontSize: 15, color: '#35313a',
+              }}
+            />
           </View>
           )}
-
           {/* E-mail */}
           <View>
             <Text style={{
