@@ -214,12 +214,12 @@ export const SendReminder: React.FC = () => {
                 <View className="flex-row items-center gap-4">
                   <Calendar size={24} color="#3a6264" />
                   <View>
-                    <Text className="text-[8px] font-bold text-[#625d67] uppercase tracking-widest">Data</Text>
+                    <Text className="text-[11px] font-bold text-[#625d67] uppercase tracking-widest">Data</Text>
                     <Text className="text-sm font-bold text-[#68597a]">{formatDateBR(selected.date)}</Text>
                   </View>
                 </View>
                 <View className="items-end">
-                  <Text className="text-[8px] font-bold text-[#625d67] uppercase tracking-widest">Horário</Text>
+                  <Text className="text-[11px] font-bold text-[#625d67] uppercase tracking-widest">Horário</Text>
                   <Text className="text-sm font-bold text-[#68597a]">{formatTime(selected.time_start)}</Text>
                 </View>
               </View>

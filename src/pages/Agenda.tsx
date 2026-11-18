@@ -345,8 +345,8 @@ export const Agenda: React.FC = () => {
         </View>
 
         {/* Filtro por status */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 20 }}>
-          <View style={{ flexDirection: 'row', gap: 8, paddingBottom: 4 }}>
+        <View style={{ marginBottom: 20 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {([null, 'Aguardando', 'Confirmado', 'Cancelado'] as const).map(s => (
               <TouchableOpacity
                 key={s ?? 'todos'}
@@ -362,7 +362,7 @@ export const Agenda: React.FC = () => {
               </TouchableOpacity>
             ))}
           </View>
-        </ScrollView>
+        </View>
 
         <View className="mb-20">
           {aptsLoading ? (

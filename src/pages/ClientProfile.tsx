@@ -434,7 +434,7 @@ export const ClientProfile: React.FC = () => {
                     <View className="flex-1 bg-[#e8e0ec] p-6 rounded-2xl" style={{ opacity: Math.max(0.4, 1 - idx * 0.2) }}>
                       <View className="flex-row items-center gap-3 mb-2">
                         <View className="bg-[#d0fcfe] px-3 py-1 rounded-full">
-                          <Text className="text-[8px] font-bold text-[#3a6264] uppercase">{item.status}</Text>
+                          <Text className="text-[11px] font-bold text-[#3a6264] uppercase">{item.status}</Text>
                         </View>
                         <Text className="text-[10px] text-[#625d67]">
                           {parseLocalDate(item.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}

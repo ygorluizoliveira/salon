@@ -93,7 +93,7 @@ export const SalonSettings: React.FC = () => {
               {fields.map(f => (
                 <View key={f.key} className="mb-4">
                   <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">{f.label}</Text>
-                  <View className="flex-row items-center bg-white rounded-2xl px-4">
+                  <View className="flex-row items-center bg-white rounded-2xl px-4 border border-[#b7afbb]">
                     <f.icon size={16} color="#68597a99" />
                     <TextInput
                       value={form[f.key]}
