@@ -10,4 +10,10 @@ if (!supabaseUrl || !supabaseKey) {
   );
 }
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+// Gestão (/) e portal do cliente (/cliente) usam chaves de sessão distintas, para
+// poderem estar logados ao mesmo tempo no mesmo navegador sem se afetarem.
+const isClientPortal = /^\/cliente(?:\/|$)/.test(window.location.pathname);
+
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
+  auth: { storageKey: isClientPortal ? 'sb-salon-client' : 'sb-salon-admin' },
+});
