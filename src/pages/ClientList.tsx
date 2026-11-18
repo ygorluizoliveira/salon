@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
+import { formatPhone, maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
 import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, Modal } from 'react-native';
 import { Search, UserPlus, X, Check, Phone, ChevronRight } from 'lucide-react-native';
 import { MotiView } from 'moti';
@@ -101,7 +101,7 @@ export const ClientList: React.FC = () => {
             ].map(s => (
               <View key={s.label} style={{ flex: 1, backgroundColor: s.bg, borderRadius: 20, paddingVertical: 14, alignItems: 'center' }}>
                 <Text style={{ fontSize: 24, fontWeight: '700', color: s.color }}>{s.value}</Text>
-                <Text style={{ fontSize: 10, fontWeight: '700', color: s.color, textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 }}>{s.label}</Text>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: s.color, textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 }}>{s.label}</Text>
               </View>
             ))}
           </View>
@@ -181,13 +181,13 @@ export const ClientList: React.FC = () => {
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                         <Text style={{ fontSize: 16, fontWeight: '700', color: '#35313a' }} numberOfLines={1}>{client.name}</Text>
                         <View style={{ backgroundColor: st.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 50 }}>
-                          <Text style={{ fontSize: 9, fontWeight: '800', color: st.color, textTransform: 'uppercase', letterSpacing: 0.8 }}>{client.displayStatus}</Text>
+                          <Text style={{ fontSize: 11, fontWeight: '800', color: st.color, textTransform: 'uppercase', letterSpacing: 0.8 }}>{client.displayStatus}</Text>
                         </View>
                       </View>
                       {client.phone ? (
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                           <Phone size={11} color="#625d67" />
-                          <Text style={{ fontSize: 12, color: '#625d67' }}>{client.phone}</Text>
+                          <Text style={{ fontSize: 12, color: '#625d67' }}>{formatPhone(client.phone)}</Text>
                         </View>
                       ) : (
                         <Text style={{ fontSize: 12, color: '#b7afbb' }}>Sem telefone</Text>
@@ -237,7 +237,7 @@ export const ClientList: React.FC = () => {
             <View style={{ gap: 14 }}>
               {/* Nome */}
               <View>
-                <Text style={{ fontSize: 10, fontWeight: '700', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>Nome *</Text>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>Nome *</Text>
                 <TextInput
                   value={newName} onChangeText={setNewName}
                   placeholder="Nome completo" placeholderTextColor="#625d6766"
@@ -248,7 +248,7 @@ export const ClientList: React.FC = () => {
 
               {/* Telefone */}
               <View>
-                <Text style={{ fontSize: 10, fontWeight: '700', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>Telefone (com DDD)</Text>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>Telefone (com DDD)</Text>
                 <TextInput
                   value={newPhone}
                   onChangeText={v => {
@@ -262,7 +262,7 @@ export const ClientList: React.FC = () => {
 
               {/* E-mail */}
               <View>
-                <Text style={{ fontSize: 10, fontWeight: '700', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>E-mail</Text>
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>E-mail</Text>
                 <TextInput
                   value={newEmail} onChangeText={setNewEmail}
                   placeholder="email@exemplo.com" placeholderTextColor="#625d6766"

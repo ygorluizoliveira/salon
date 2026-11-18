@@ -251,7 +251,7 @@ const card: object = {
   shadowOffset: { width: 0, height: 4 }, elevation: 2,
 };
 const sectionTitle: object = {
-  fontSize: 10, fontWeight: '700', color: '#625d67',
+  fontSize: 11, fontWeight: '700', color: '#625d67',
   textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12,
 };
 const input: object = {

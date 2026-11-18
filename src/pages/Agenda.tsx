@@ -277,7 +277,7 @@ export const Agenda: React.FC = () => {
         >
           <View className="mb-10 flex-row justify-between items-end">
             <View>
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-[#625d67] mb-1">Organizando o Tempo</Text>
+              <Text className="text-[11px] font-bold uppercase tracking-widest text-[#625d67] mb-1">Organizando o Tempo</Text>
               <Text className="text-5xl font-serif text-[#68597a] italic">Agenda</Text>
             </View>
             <TouchableOpacity 
@@ -299,7 +299,7 @@ export const Agenda: React.FC = () => {
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
             {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB'].map(w => (
-              <Text key={w} style={{ width: '14.2%', textAlign: 'center', fontSize: 10, fontWeight: '700', color: '#625d67' }}>{w}</Text>
+              <Text key={w} style={{ width: '14.2%', textAlign: 'center', fontSize: 11, fontWeight: '700', color: '#625d67' }}>{w}</Text>
             ))}
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -330,13 +330,13 @@ export const Agenda: React.FC = () => {
                   </Text>
                   {dayApts.map(a => (
                     <View key={a.id} style={{ backgroundColor: '#e8e0ec', borderRadius: 6, paddingHorizontal: 4, paddingVertical: 2, marginBottom: 3 }}>
-                      <Text numberOfLines={1} style={{ fontSize: 8, color: '#625d67', fontWeight: '700' }}>
+                      <Text numberOfLines={1} style={{ fontSize: 11, color: '#625d67', fontWeight: '700' }}>
                         {getAppointmentTimeRange(a)} {a.client?.name ?? '—'}
                       </Text>
                     </View>
                   ))}
                   {(monthMap.get(iso)?.length ?? 0) > 2 && (
-                    <Text style={{ fontSize: 8, color: '#625d67', textAlign: 'center' }}>+{(monthMap.get(iso)?.length ?? 0) - 2}</Text>
+                    <Text style={{ fontSize: 11, color: '#625d67', textAlign: 'center' }}>+{(monthMap.get(iso)?.length ?? 0) - 2}</Text>
                   )}
                 </TouchableOpacity>
               );
@@ -373,7 +373,7 @@ export const Agenda: React.FC = () => {
               className="border-2 border-dashed border-[#b7afbb4d] rounded-2xl p-10 items-center justify-center mt-4"
             >
               <Plus size={20} color="#625d6766" />
-              <Text className="font-bold uppercase tracking-widest text-[10px] text-[#625d6766] mt-3">Nenhum agendamento</Text>
+              <Text className="font-bold uppercase tracking-widest text-[11px] text-[#625d6766] mt-3">Nenhum agendamento</Text>
               <Text className="text-[#625d6766] text-xs mt-1">{statusFilter ? `Nenhum com status "${statusFilter}"` : 'Toque para agendar'}</Text>
             </TouchableOpacity>
           ) : (
@@ -437,7 +437,7 @@ export const Agenda: React.FC = () => {
             <ScrollView className="px-8 pt-6 pb-10" keyboardShouldPersistTaps="handled">
 
               {/* Cliente */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">Cliente *</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2">Cliente *</Text>
               {selectedClient ? (
                 <TouchableOpacity
                   onPress={() => { setSelectedClient(null); setShowClientList(false); }}
@@ -542,7 +542,7 @@ export const Agenda: React.FC = () => {
               )}
 
               {/* Serviço */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2 mt-2">Serviço *</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2 mt-2">Serviço *</Text>
               {serviceCategories.filter(c => c.status === 'active').length > 0 ? (
                 <View className="flex-row flex-wrap gap-2 mb-6">
                   {serviceCategories.filter(c => c.status === 'active').map(cat => {
@@ -566,7 +566,7 @@ export const Agenda: React.FC = () => {
                           }`}>{cat.name}</Text>
                         </View>
                         {cat.price != null && (
-                          <Text className={`text-[10px] mt-0.5 ${
+                          <Text className={`text-[11px] mt-0.5 ${
                             selected ? 'text-white/80' : 'text-[#625d67]'
                           }`}>R$ {cat.price.toFixed(2).replace('.', ',')}</Text>
                         )}
@@ -585,7 +585,7 @@ export const Agenda: React.FC = () => {
               )}
 
               {/* Valor do Serviço */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2 mt-2">Valor do Serviço</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2 mt-2">Valor do Serviço</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#e8e0ec', borderRadius: 16, paddingHorizontal: 16, marginBottom: 24 }}>
                 <Text style={{ color: '#625d67', fontSize: 13 }}>R$</Text>
                 <TextInput
@@ -599,7 +599,7 @@ export const Agenda: React.FC = () => {
               </View>
 
               {/* Data */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">Data *</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2">Data *</Text>
               <input
                 type="date"
                 value={date}
@@ -621,7 +621,7 @@ export const Agenda: React.FC = () => {
 
               {/* Horários */}
               <View className="mb-8">
-                <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">Início</Text>
+                <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2">Início</Text>
                 <input
                   type="time"
                   value={timeStart}
@@ -694,7 +694,7 @@ export const Agenda: React.FC = () => {
 
                   {emergencyRequest && shortNoticeAck && (
                     <>
-                      <Text style={{ color: '#7a4a27', fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 6, marginTop: 12 }}>
+                      <Text style={{ color: '#7a4a27', fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 6, marginTop: 12 }}>
                         Motivo da emergencia
                       </Text>
                       <TextInput
@@ -751,7 +751,7 @@ export const Agenda: React.FC = () => {
             <ScrollView className="px-8 pt-6 pb-10" keyboardShouldPersistTaps="handled">
 
               {/* Status */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-3">Status</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-3">Status</Text>
               <View className="flex-row flex-wrap gap-2 mb-6">
                 {(['Aguardando', 'Confirmado', 'Cancelado'] as const).map(s => (
                   <TouchableOpacity
@@ -772,7 +772,7 @@ export const Agenda: React.FC = () => {
               </View>
 
               {/* Serviço */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-3">Serviço *</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-3">Serviço *</Text>
               {serviceCategories.filter(c => c.status === 'active').length > 0 ? (
                 <View className={`flex-row flex-wrap gap-2 mb-6 ${isConfirmedEdit ? 'opacity-50' : ''}`}>
                   {serviceCategories.filter(c => c.status === 'active').map(cat => {
@@ -808,7 +808,7 @@ export const Agenda: React.FC = () => {
               )}
 
               {/* Valor do Serviço */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2 mt-2">Valor do Serviço</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2 mt-2">Valor do Serviço</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#e8e0ec', borderRadius: 16, paddingHorizontal: 16, marginBottom: 24, opacity: isConfirmedEdit ? 0.5 : 1 }}>
                 <Text style={{ color: '#625d67', fontSize: 13 }}>R$</Text>
                 <TextInput
@@ -823,7 +823,7 @@ export const Agenda: React.FC = () => {
               </View>
 
               {/* Data */}
-              <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">Data *</Text>
+              <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2">Data *</Text>
               <input
                 type="date"
                 value={editDate}
@@ -839,7 +839,7 @@ export const Agenda: React.FC = () => {
 
               {/* Horários */}
               <View className="mb-8">
-                <Text className="uppercase tracking-widest text-[10px] font-bold text-[#625d67] mb-2">Início</Text>
+                <Text className="uppercase tracking-widest text-[11px] font-bold text-[#625d67] mb-2">Início</Text>
                 <input
                   type="time"
                   value={editTimeStart}
@@ -919,7 +919,7 @@ export const Agenda: React.FC = () => {
             <Text style={{ fontSize: 15, fontWeight: 'bold', color: '#35313a', marginBottom: 4 }}>{actionApt?.client?.name}</Text>
             <Text style={{ fontSize: 12, color: '#625d67', marginBottom: 24 }}>{actionApt?.service} • {formatTime(actionApt?.time_start)} – {formatTime(actionApt?.time_end)}</Text>
 
-            <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12 }}>Alterar status</Text>
+            <Text style={{ fontSize: 11, fontWeight: 'bold', color: '#625d67', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12 }}>Alterar status</Text>
             {(['Aguardando', 'Confirmado', 'Cancelado'] as const).map(s => (
               <TouchableOpacity
                 key={s}

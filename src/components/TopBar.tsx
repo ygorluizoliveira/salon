@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { Bell, Menu, ChevronLeft, UserCircle, X, Check, House } from 'lucide-react-native';
 import { useDrawer } from '../lib/DrawerContext';
@@ -101,7 +101,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onBack, title }) => {
               minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center',
               paddingHorizontal: 3,
             }}>
-              <Text style={{ color: '#fff', fontSize: 9, fontWeight: '800' }}>
+              <Text style={{ color: '#fff', fontSize: 11, fontWeight: '800' }}>
                 {pending.length > 9 ? '9+' : pending.length}
               </Text>
             </View>

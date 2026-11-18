@@ -108,9 +108,11 @@ export function ClientAuthProvider({ children }: { children: React.ReactNode }) 
     if (!res.data?.ok) throw new Error(generic);
     await signInWithEmail(f.email.trim(), f.password);
   }
-  const signOut = useCallback(() => {
+  const signOut = useCallback(async () => {
     setClient(null);
     storageRemove(SESSION_KEY);
+    try { await supabase.auth.signOut({ scope: 'local' }); } catch { /* token removed below */ }
+    try { localStorage.removeItem('sb-salon-client'); } catch { /* ignore */ }
   }, []);
 
   return (

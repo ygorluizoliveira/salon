@@ -101,7 +101,7 @@ export const Promotions: React.FC = () => {
                         </View>
                       )}
                       <View className={`px-3 py-1 rounded-full ${promo.active ? 'bg-[#d0fcfe]' : 'bg-[#f0e4f8]'}`}>
-                        <Text className={`text-[10px] font-bold uppercase ${promo.active ? 'text-[#3a6264]' : 'text-[#625d67]'}`}>
+                        <Text className={`text-[11px] font-bold uppercase ${promo.active ? 'text-[#3a6264]' : 'text-[#625d67]'}`}>
                           {promo.active ? 'Ativa' : 'Inativa'}
                         </Text>
                       </View>
@@ -163,14 +163,14 @@ export const Promotions: React.FC = () => {
 
             <View style={{ gap: 12 }}>
               <View>
-                <Text className="text-[10px] font-bold text-[#625d67] uppercase tracking-wider mb-2 ml-1">Título *</Text>
+                <Text className="text-[11px] font-bold text-[#625d67] uppercase tracking-wider mb-2 ml-1">Título *</Text>
                 <TextInput value={form.title} onChangeText={v => setForm(f => ({ ...f, title: v }))}
                   placeholder="Ex: 20% off em coloração" placeholderTextColor="#625d6766"
                   style={{ backgroundColor: '#f0e9f8', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, fontSize: 15, color: '#35313a' }} />
               </View>
 
               <View>
-                <Text className="text-[10px] font-bold text-[#625d67] uppercase tracking-wider mb-2 ml-1">Descrição</Text>
+                <Text className="text-[11px] font-bold text-[#625d67] uppercase tracking-wider mb-2 ml-1">Descrição</Text>
                 <TextInput value={form.description} onChangeText={v => setForm(f => ({ ...f, description: v }))}
                   placeholder="Detalhes da promoção…" placeholderTextColor="#625d6766" multiline
                   style={{ backgroundColor: '#f0e9f8', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, fontSize: 15, color: '#35313a', minHeight: 80 }} />
@@ -178,13 +178,13 @@ export const Promotions: React.FC = () => {
 
               <View className="flex-row" style={{ gap: 10 }}>
                 <View className="flex-1">
-                  <Text className="text-[10px] font-bold text-[#625d67] uppercase tracking-wider mb-2 ml-1">Desconto (%)</Text>
+                  <Text className="text-[11px] font-bold text-[#625d67] uppercase tracking-wider mb-2 ml-1">Desconto (%)</Text>
                   <TextInput value={form.discount_pct} onChangeText={v => setForm(f => ({ ...f, discount_pct: v.replace(/\D/g, '') }))}
                     placeholder="20" placeholderTextColor="#625d6766" keyboardType="numeric"
                     style={{ backgroundColor: '#f0e9f8', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, fontSize: 15, color: '#35313a' }} />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-[10px] font-bold text-[#625d67] uppercase tracking-wider mb-2 ml-1">Válida até</Text>
+                  <Text className="text-[11px] font-bold text-[#625d67] uppercase tracking-wider mb-2 ml-1">Válida até</Text>
                   <TextInput value={form.valid_until} onChangeText={v => {
                     const d = v.replace(/\D/g, '').slice(0, 8);
                     let m = d;

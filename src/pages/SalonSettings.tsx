@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
+import { formatPhone, maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { Check, X, Store, Phone, Mail, MapPin, Instagram, MessageCircle } from 'lucide-react-native';
 import { MotiView } from 'moti';
@@ -29,7 +29,7 @@ export const SalonSettings: React.FC = () => {
       setForm({
         salon_name: settings.salon_name ?? '',
         tagline:    settings.tagline    ?? '',
-        phone:      settings.phone      ?? '',
+        phone:      formatPhone(settings.phone),
         email:      settings.email      ?? '',
         address:    settings.address    ?? '',
         instagram:  settings.instagram  ?? '',
@@ -92,7 +92,7 @@ export const SalonSettings: React.FC = () => {
             <View className="bg-[#f0e9f8] rounded-[32px] p-6">
               {fields.map(f => (
                 <View key={f.key} className="mb-4">
-                  <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">{f.label}</Text>
+                  <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">{f.label}</Text>
                   <View className="flex-row items-center bg-white rounded-2xl px-4 border border-[#b7afbb]">
                     <f.icon size={16} color="#68597a99" />
                     <TextInput

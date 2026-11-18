@@ -85,7 +85,7 @@ function ClientPortal() {
           }}>
             <Text style={{ fontSize: 20 }}>{n.icon}</Text>
             <Text style={{
-              fontSize: 10, fontWeight: '700', letterSpacing: 0.5,
+              fontSize: 11, fontWeight: '700', letterSpacing: 0.5,
               color: page === n.id ? '#68597a' : '#b7afbb',
             }}>
               {n.label.toUpperCase()}

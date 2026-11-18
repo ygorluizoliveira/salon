@@ -151,7 +151,7 @@ export const SendReminder: React.FC = () => {
           </View>
 
           <View className="bg-[#e8e0ec] rounded-[32px] p-6 mb-8">
-            <Text className="text-[10px] font-bold uppercase tracking-widest text-[#625d67] mb-4">Agendamento</Text>
+            <Text className="text-[11px] font-bold uppercase tracking-widest text-[#625d67] mb-4">Agendamento</Text>
             {loading ? (
               <ActivityIndicator color="#68597a" />
             ) : appointments.length === 0 ? (
@@ -177,7 +177,7 @@ export const SendReminder: React.FC = () => {
           </View>
 
           <View className="mb-8">
-            <Text className="text-[10px] font-bold uppercase tracking-widest text-[#625d67] mb-4">Canal de Envio</Text>
+            <Text className="text-[11px] font-bold uppercase tracking-widest text-[#625d67] mb-4">Canal de Envio</Text>
             <View className="flex-row gap-3">
               {CHANNELS.map(({ key, label, Icon }) => {
                 const active = channel === key;
@@ -192,7 +192,7 @@ export const SendReminder: React.FC = () => {
                     }}
                   >
                     <Icon size={24} color={active ? '#68597a' : '#625d67'} />
-                    <Text style={{ fontSize: 10, fontWeight: '700', marginTop: 8, color: active ? '#68597a' : '#625d67' }}>{label}</Text>
+                    <Text style={{ fontSize: 11, fontWeight: '700', marginTop: 8, color: active ? '#68597a' : '#625d67' }}>{label}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -200,7 +200,7 @@ export const SendReminder: React.FC = () => {
           </View>
 
           <View className="bg-[#f9f1fa] rounded-[40px] p-10 mb-20">
-            <Text className="text-[10px] font-bold uppercase tracking-widest text-[#625d67] mb-8">Mensagem de Lembrete</Text>
+            <Text className="text-[11px] font-bold uppercase tracking-widest text-[#625d67] mb-8">Mensagem de Lembrete</Text>
             <TextInput
               multiline
               value={message}

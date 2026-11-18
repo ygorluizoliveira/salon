@@ -9,7 +9,7 @@ import { useServiceHistory } from '../lib/hooks/useServiceHistory';
 import { uploadAvatarFile } from '../lib/avatarUpload';
 import type { ClientStatus } from '../lib/types';
 import { navigationRef } from '../lib/navigationRef';
-import { parseLocalDate, maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
+import { parseLocalDate, formatPhone, maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
 import { InviteClientModal } from '../components/InviteClientModal';
 
 const STATUSES: ClientStatus[] = ['Ativo', 'Inativo'];
@@ -88,7 +88,7 @@ export const ClientProfile: React.FC = () => {
       setForm({
         name:               client.name,
         email:              client.email  ?? '',
-        phone:              client.phone  ?? '',
+        phone:              formatPhone(client.phone),
         notes:              client.notes  ?? '',
         status:             client.status,
         address:            client.address            ?? '',
@@ -208,7 +208,7 @@ export const ClientProfile: React.FC = () => {
 
                   {/* Nome */}
                   <View className="mb-4">
-                    <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Nome *</Text>
+                    <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Nome *</Text>
                     <TextInput value={form.name} onChangeText={v => setForm(f => ({ ...f, name: v }))}
                       placeholder="Nome completo" placeholderTextColor="#625d6766"
                       className="bg-[#f9f1fa] rounded-2xl px-4 py-4 text-[#35313a]" />
@@ -216,7 +216,7 @@ export const ClientProfile: React.FC = () => {
 
                   {/* E-mail */}
                   <View className="mb-4">
-                    <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">E-mail</Text>
+                    <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">E-mail</Text>
                     <TextInput value={form.email} onChangeText={v => setForm(f => ({ ...f, email: v }))}
                       placeholder="email@exemplo.com" placeholderTextColor="#625d6766"
                       keyboardType="email-address" autoCapitalize="none"
@@ -225,7 +225,7 @@ export const ClientProfile: React.FC = () => {
 
                   {/* Telefone */}
                   <View className="mb-4">
-                    <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Telefone (com DDD)</Text>
+                    <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Telefone (com DDD)</Text>
                     <TextInput value={form.phone}
                       onChangeText={v => {
                         setForm(f => ({ ...f, phone: maskPhone(v) }));
@@ -237,7 +237,7 @@ export const ClientProfile: React.FC = () => {
 
                   {/* Data de nascimento */}
                   <View className="mb-4">
-                    <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Data de Nascimento</Text>
+                    <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Data de Nascimento</Text>
                     <TextInput value={form.birth_date}
                       onChangeText={v => {
                         setForm(f => ({ ...f, birth_date: maskBirthDate(parseBirthDateInput(v)) }));
@@ -250,7 +250,7 @@ export const ClientProfile: React.FC = () => {
 
                   {/* Endereço */}
                   <View className="mb-4">
-                    <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Endereço</Text>
+                    <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Endereço</Text>
                     <TextInput value={form.address} onChangeText={v => setForm(f => ({ ...f, address: v }))}
                       placeholder="Rua, número, bairro…" placeholderTextColor="#625d6766"
                       className="bg-[#f9f1fa] rounded-2xl px-4 py-4 text-[#35313a]" />
@@ -258,7 +258,7 @@ export const ClientProfile: React.FC = () => {
 
                   {/* Foto */}
                   <View className="mb-4">
-                    <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Foto</Text>
+                    <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Foto</Text>
                     <TouchableOpacity
                       onPress={() => avatarInputRef.current?.click()}
                       disabled={saving}
@@ -280,7 +280,7 @@ export const ClientProfile: React.FC = () => {
 
                   {/* Forma de contato */}
                   <View className="mb-4">
-                    <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Forma de Contato Preferida</Text>
+                    <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Forma de Contato Preferida</Text>
                     <View className="flex-row flex-wrap gap-2">
                       {CONTACT_OPTIONS.map(c => (
                         <TouchableOpacity key={c} onPress={() => setForm(f => ({ ...f, contact_preference: c }))}
@@ -293,7 +293,7 @@ export const ClientProfile: React.FC = () => {
 
                   {/* Status */}
                   <View className="mb-4">
-                    <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Status</Text>
+                    <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Status</Text>
                     <View className="flex-row flex-wrap gap-2">
                       {STATUSES.map(s => (
                         <TouchableOpacity key={s} onPress={() => setForm(f => ({ ...f, status: s }))}
@@ -306,7 +306,7 @@ export const ClientProfile: React.FC = () => {
 
                   {/* Observações */}
                   <View className="mb-6">
-                    <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Observações</Text>
+                    <Text className="text-[11px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Observações</Text>
                     <TextInput value={form.notes} onChangeText={v => setForm(f => ({ ...f, notes: v }))}
                       placeholder="Anotações sobre o cliente…" placeholderTextColor="#625d6766"
                       multiline numberOfLines={3}
@@ -375,7 +375,7 @@ export const ClientProfile: React.FC = () => {
                     {client.phone && (
                       <View className="flex-row items-center gap-2 bg-[#f9f1fa] px-4 py-2 rounded-full">
                         <Phone size={14} color="#68597a" />
-                        <Text className="text-xs font-medium text-[#35313a]">{client.phone}</Text>
+                        <Text className="text-xs font-medium text-[#35313a]">{formatPhone(client.phone)}</Text>
                       </View>
                     )}
                     {client.address && (
@@ -436,7 +436,7 @@ export const ClientProfile: React.FC = () => {
                         <View className="bg-[#d0fcfe] px-3 py-1 rounded-full">
                           <Text className="text-[11px] font-bold text-[#3a6264] uppercase">{item.status}</Text>
                         </View>
-                        <Text className="text-[10px] text-[#625d67]">
+                        <Text className="text-[11px] text-[#625d67]">
                           {parseLocalDate(item.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </Text>
                       </View>

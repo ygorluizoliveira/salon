@@ -57,6 +57,13 @@ export function maskPhone(v: string): string {
   return d;
 }
 
+/** Formata telefones antigos (com/sem máscara, com +55) para exibição. */
+export function formatPhone(v?: string | null): string {
+  let d = (v ?? '').replace(/\D/g, '');
+  if (d.length > 11 && d.startsWith('55')) d = d.slice(2);
+  return maskPhone(d);
+}
+
 /** Válido: DDD 11–99 + 8 dígitos (fixo) ou 9 dígitos começando em 9 (celular). */
 export function isValidPhone(v: string): boolean {
   const d = v.replace(/\D/g, '');
