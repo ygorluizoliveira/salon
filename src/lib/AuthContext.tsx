@@ -10,7 +10,7 @@ interface AuthContextValue {
   isAdmin: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<string | null>;
-  signUp: (email: string, password: string, name?: string, gender?: string) => Promise<string | null>;
+  signUp: (email: string, password: string, name?: string, cpf?: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<string | null>;
 }
@@ -52,17 +52,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function signUp(email: string, password: string, name?: string, gender?: string): Promise<string | null> {
-    const meta: Record<string, string> = {};
-    if (name)   meta.full_name = name.trim();
-    if (gender) meta.gender   = gender;
+  async function signUp(email: string, password: string, name?: string, cpf?: string): Promise<string | null> {
+    const generic = 'Não foi possível criar a conta. Verifique os dados e tente novamente.';
     try {
-      const { error } = await withTimeout(supabase.auth.signUp({
-        email,
-        password,
-        options: Object.keys(meta).length ? { data: meta } : undefined,
-      }));
-      return error ? translateAuthError(error.message) : null;
+      const { data, error } = await withTimeout(
+        supabase.functions.invoke('register-staff', { body: { email, cpf, password, name } }),
+      );
+      if (error) {
+        const res = (error as any).context as Response | undefined;
+        if (res && typeof res.status === 'number') {
+          if (res.status === 429) return 'Muitas tentativas. Aguarde um instante e tente novamente.';
+          return generic;
+        }
+        return translateAuthError(error.message);
+      }
+      if (!data?.ok) return generic;
+      return await signIn(email, password);
     } catch (e: any) {
       return translateAuthError(e?.message);
     }
