@@ -110,27 +110,27 @@ export function ClientLogin() {
             {!initialToken && (
               <>
                 <Text style={labelStyle}>Código do convite</Text>
-                <TextInput value={inviteToken} onChangeText={setInviteToken} placeholder="Cole o código" style={inputStyle} autoCapitalize="none" autoCorrect={false} />
+                <TextInput value={inviteToken} onChangeText={setInviteToken} placeholder="Cole o código" style={inputStyle} nativeID="reg-token" autoComplete="off" autoCapitalize="none" autoCorrect={false} />
                 <View style={{ height: 14 }} />
               </>
             )}
             <Text style={labelStyle}>Nome completo</Text>
-            <TextInput value={regName} onChangeText={setRegName} placeholder="Seu nome" style={inputStyle} />
+            <TextInput value={regName} onChangeText={setRegName} placeholder="Seu nome" style={inputStyle} nativeID="reg-name" autoComplete="name" />
 
             <Text style={{ ...labelStyle, marginTop: 14 }}>Telefone / WhatsApp</Text>
-            <TextInput value={regPhone} onChangeText={v => setRegPhone(maskPhone(v))} placeholder="(11) 99999-9999" style={inputStyle} inputMode="tel" />
+            <TextInput value={regPhone} onChangeText={v => setRegPhone(maskPhone(v))} placeholder="(11) 99999-9999" style={inputStyle} inputMode="tel" nativeID="reg-phone" autoComplete="tel" />
 
             <Text style={{ ...labelStyle, marginTop: 14 }}>E-mail</Text>
-            <TextInput value={regEmail} onChangeText={setRegEmail} placeholder="seu@email.com" style={inputStyle} autoCapitalize="none" keyboardType="email-address" />
+            <TextInput value={regEmail} onChangeText={setRegEmail} placeholder="seu@email.com" style={inputStyle} autoCapitalize="none" keyboardType="email-address" nativeID="reg-email" autoComplete="email" />
 
             <Text style={{ ...labelStyle, marginTop: 14 }}>Endereço (opcional)</Text>
-            <TextInput value={regAddress} onChangeText={setRegAddress} placeholder="Rua, número, bairro, cidade" style={inputStyle} />
+            <TextInput value={regAddress} onChangeText={setRegAddress} placeholder="Rua, número, bairro, cidade" style={inputStyle} nativeID="reg-address" autoComplete="street-address" />
 
             <Text style={{ ...labelStyle, marginTop: 14 }}>Senha</Text>
-            <TextInput value={regPassword} onChangeText={setRegPassword} placeholder="8 a 72 caracteres" style={inputStyle} secureTextEntry />
+            <TextInput value={regPassword} onChangeText={setRegPassword} placeholder="8 a 72 caracteres" style={inputStyle} secureTextEntry nativeID="reg-password" autoComplete="new-password" />
 
             <Text style={{ ...labelStyle, marginTop: 14 }}>Confirmar senha</Text>
-            <TextInput value={regPassword2} onChangeText={setRegPassword2} placeholder="Repita a senha" style={inputStyle} secureTextEntry />
+            <TextInput value={regPassword2} onChangeText={setRegPassword2} placeholder="Repita a senha" style={inputStyle} secureTextEntry nativeID="reg-password2" autoComplete="new-password" />
 
             {error && <Text style={errorStyle}>{error}</Text>}
             <TouchableOpacity disabled={loading} onPress={handleRegister} style={btnStyle(loading)}>
@@ -167,9 +167,9 @@ export function ClientLogin() {
             ) : (
               <View>
                 <Text style={labelStyle}>E-mail</Text>
-                <TextInput value={email} onChangeText={setEmail} placeholder="seu@email.com" style={inputStyle} autoCapitalize="none" keyboardType="email-address" />
+                <TextInput value={email} onChangeText={setEmail} placeholder="seu@email.com" style={inputStyle} autoCapitalize="none" keyboardType="email-address" nativeID="login-email" autoComplete="email" />
                 <Text style={{ ...labelStyle, marginTop: 14 }}>Senha</Text>
-                <TextInput value={password} onChangeText={setPassword} placeholder="••••••••" style={inputStyle} secureTextEntry />
+                <TextInput value={password} onChangeText={setPassword} placeholder="••••••••" style={inputStyle} secureTextEntry nativeID="login-password" autoComplete="current-password" />
                 {error && <Text style={errorStyle}>{error}</Text>}
                 <TouchableOpacity disabled={loading} onPress={handleEmailLogin} style={btnStyle(loading)}>
                   <Text style={btnTextStyle}>{loading ? 'Entrando...' : 'Entrar'}</Text>
