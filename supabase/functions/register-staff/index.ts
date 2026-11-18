@@ -33,6 +33,8 @@ Deno.serve(async (req) => {
   const cpf = String(body.cpf ?? '').replace(/\D/g, '');
   const password = String(body.password ?? '');
   const name = String(body.name ?? '').trim();
+  const genderInput = String(body.gender ?? '').trim().toUpperCase();
+  const rawGender = ['F', 'M', 'O'].includes(genderInput) ? genderInput : null;
   const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || null;
 
   const fail = async (status = 400) => { await sleep(700 + Math.random() * 400); return json({ error: GENERIC }, status); };
@@ -49,12 +51,15 @@ Deno.serve(async (req) => {
   if (row?.locked) { await sleep(1000); return json({ error: LOCKED }, 429); }
   if (!row?.ok) return await fail();
 
+  // O gênero informado vale; senão usa o padrão do convite
+  const gender = rawGender ?? (['F', 'M', 'O'].includes(row.invite_gender) ? row.invite_gender : null);
+
   const { error: createErr } = await admin.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
     app_metadata: { role: 'admin' },
-    user_metadata: { name },
+    user_metadata: { name, ...(gender ? { gender } : {}) },
   });
 
   if (createErr) {

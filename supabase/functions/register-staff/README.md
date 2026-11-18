@@ -31,7 +31,7 @@ Criar usuário no Auth e definir `app_metadata.role` exige a service role / Admi
 ## Chamada (front, sem login)
 ```ts
 const { data, error } = await supabase.functions.invoke('register-staff', {
-  body: { email, cpf, password, name },
+  body: { email, cpf, password, name, gender },   // gender opcional: 'F' | 'M' | 'O' (padrão: o do convite)
 });
 // sucesso: { ok: true } -> depois fazer signInWithPassword(email, password)
 // erro: JSON { error: string }: 400 genérico, 429 muitas tentativas
