@@ -17,7 +17,7 @@ function json(body: unknown, status = 200) {
 }
 const clean = (v: unknown, max: number) => String(v ?? '').trim().slice(0, max);
 
-// Telefone BR: remove +55, 10/11 dígitos, DDD 11-99, 9º dígito = 9 se 11 dígitos. Retorna só dígitos ou null.
+// Telefone BR: remove +55, 10/11 dígitos, DDD 11-99, 9º dígito = 9 se 11 dígitos. Retorna "(DD) 9XXXX-XXXX" / "(DD) XXXX-XXXX" ou null.
 function normalizePhone(v: string): string | null {
   let d = v.replace(/\D/g, '');
   if ((d.length === 12 || d.length === 13) && d.startsWith('55')) d = d.slice(2);
@@ -25,7 +25,9 @@ function normalizePhone(v: string): string | null {
   const ddd = Number(d.slice(0, 2));
   if (ddd < 11 || ddd > 99) return null;
   if (d.length === 11 && d[2] !== '9') return null;
-  return d;
+  return d.length === 11
+    ? `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
+    : `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
 }
 
 Deno.serve(async (req) => {
