@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useClientAuth } from '../lib/ClientAuthContext';
+function normalizeInviteCode(v: string): string {
+  return v.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '').toUpperCase();
+}
+
 import { maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
 import { webAuthnSupported } from '../lib/hooks/useWebAuthn';
 import { supabase } from '../lib/supabase';
@@ -63,7 +67,8 @@ export function ClientLogin() {
     if (!isValidPhone(regPhone)) { setError(PHONE_ERROR); return; }
     setLoading(true);
     try {
-      await registerWithInvite({ token: inviteToken, name: regName, phone: regPhone, email: regEmail, password: regPassword, address: regAddress });
+      const normalized = normalizeInviteCode(inviteToken);
+      await registerWithInvite({ ...(initialToken ? { token: initialToken } : { code: normalized }), name: regName, phone: regPhone, email: regEmail, password: regPassword, address: regAddress });
     } catch (err: any) { setError(err.message); }
     finally { setLoading(false); }
   }

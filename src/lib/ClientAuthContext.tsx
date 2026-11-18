@@ -6,7 +6,7 @@ import { authenticateWithPasskey } from './hooks/useWebAuthn';
 import { storageGet, storageRemove, storageSet } from './platform';
 
 export interface InviteRegistration {
-  token: string; name: string; phone: string; email: string; password: string; address?: string;
+  token?: string; code?: string; name: string; phone: string; email: string; password: string; address?: string;
 }
 
 interface ClientAuthState {
@@ -93,7 +93,7 @@ export function ClientAuthProvider({ children }: { children: React.ReactNode }) 
     let res;
     try {
       res = await withTimeout(
-        supabase.functions.invoke('register-client', { body: { token: f.token.trim(), name: f.name.trim(), phone: f.phone.trim(), email: f.email.trim(), password: f.password, address: f.address?.trim() || undefined } }),
+        supabase.functions.invoke('register-client', { body: { ...(f.token?.trim() ? { token: f.token.trim() } : { code: f.code?.trim() }), name: f.name.trim(), phone: f.phone.trim(), email: f.email.trim(), password: f.password, address: f.address?.trim() || undefined } }),
       );
     } catch (e: any) {
       throw new Error(translateAuthError(e?.message));

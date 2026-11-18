@@ -12,6 +12,11 @@ interface Props {
 
 const box = { backgroundColor: '#f0e9f8', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, fontSize: 13, color: '#35313a' } as const;
 
+function extractCode(data: unknown): string | null {
+  const row: any = Array.isArray(data) ? data[0] : data;
+  return typeof row?.code === 'string' ? row.code : null;
+}
+
 function extractToken(data: unknown): string | null {
   const row: any = Array.isArray(data) ? data[0] : data;
   if (typeof row === 'string') return row;
@@ -20,15 +25,17 @@ function extractToken(data: unknown): string | null {
 
 export function InviteClientModal({ visible, onClose, client }: Props) {
   const [token, setToken] = useState<string | null>(null);
+  const [code, setCode] = useState<string | null>(null);
+  const [copiedCode, setCopiedCode] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const link = token ? `${window.location.origin}/cliente?convite=${encodeURIComponent(token)}` : '';
-  const waText = `Olá${client?.name ? ` ${client.name.split(' ')[0]}` : ''}! Segue seu link para criar sua conta na área do cliente (válido por 15 minutos, uso único): ${link}`;
+  const waText = `Olá${client?.name ? ` ${client.name.split(' ')[0]}` : ''}! Segue seu link para criar sua conta na área do cliente (válido por 15 minutos, uso único): ${link}${code ? `\n\nSe preferir digitar manualmente, use o código: ${code}` : ''}`;
 
   async function generate() {
-    setLoading(true); setError(null); setCopied(false); setToken(null);
+    setLoading(true); setError(null); setCopied(false); setCopiedCode(false); setToken(null); setCode(null);
     try {
       const args = client?.id ? { p_client_id: client.id } : {};
       const { data, error: err } = await withTimeout(supabase.rpc('create_client_invite', args as any));
@@ -36,6 +43,7 @@ export function InviteClientModal({ visible, onClose, client }: Props) {
       const t = extractToken(data);
       if (!t) throw new Error('Não foi possível gerar o link.');
       setToken(t);
+      setCode(extractCode(data));
     } catch (e: any) {
       setError(e?.message === 'TIMEOUT' ? 'Tempo de conexão esgotado. Tente novamente.' : (e?.message ?? 'Erro ao gerar o link.'));
     } finally {
@@ -47,6 +55,10 @@ export function InviteClientModal({ visible, onClose, client }: Props) {
 
   async function copy() {
     try { await navigator.clipboard.writeText(link); setCopied(true); } catch { setCopied(false); }
+  }
+
+  async function copyCode() {
+    try { await navigator.clipboard.writeText(code ?? ''); setCopiedCode(true); } catch { setCopiedCode(false); }
   }
 
   function whatsapp() {
@@ -76,6 +88,15 @@ export function InviteClientModal({ visible, onClose, client }: Props) {
               <TouchableOpacity onPress={copy} style={{ backgroundColor: '#e8e0ec', borderRadius: 50, paddingVertical: 14, alignItems: 'center' }}>
                 <Text style={{ color: '#68597a', fontWeight: '700' }}>{copied ? 'Copiado!' : 'Copiar link'}</Text>
               </TouchableOpacity>
+              {code && (
+                <>
+                  <Text style={{ color: '#625d67', fontSize: 12 }}>Código (alternativa manual; o link é o recomendado):</Text>
+                  <Text selectable style={{ ...box, fontSize: 18, fontWeight: '700', letterSpacing: 1, textAlign: 'center' }}>{code}</Text>
+                  <TouchableOpacity onPress={copyCode} style={{ backgroundColor: '#e8e0ec', borderRadius: 50, paddingVertical: 14, alignItems: 'center' }}>
+                    <Text style={{ color: '#68597a', fontWeight: '700' }}>{copiedCode ? 'Copiado!' : 'Copiar código'}</Text>
+                  </TouchableOpacity>
+                </>
+              )}
               <TouchableOpacity onPress={whatsapp} style={{ backgroundColor: '#25a244', borderRadius: 50, paddingVertical: 16, alignItems: 'center' }}>
                 <Text style={{ color: '#fff', fontWeight: '700' }}>Enviar por WhatsApp</Text>
               </TouchableOpacity>
