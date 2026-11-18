@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useClientAuth } from '../lib/ClientAuthContext';
+import { maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
 import { webAuthnSupported } from '../lib/hooks/useWebAuthn';
 import { supabase } from '../lib/supabase';
 import { useSalonSettings } from '../lib/hooks/useSalonSettings';
@@ -59,6 +60,7 @@ export function ClientLogin() {
     if (regPassword.length < 8 || regPassword.length > 72) { setError('A senha deve ter entre 8 e 72 caracteres.'); return; }
     if (!inviteToken.trim()) { setError('Link de convite ausente. Peça um novo link ao salão.'); return; }
     if (!regName.trim() || !regPhone.trim() || !regEmail.trim()) { setError('Preencha nome, telefone e e-mail.'); return; }
+    if (!isValidPhone(regPhone)) { setError(PHONE_ERROR); return; }
     setLoading(true);
     try {
       await registerWithInvite({ token: inviteToken, name: regName, phone: regPhone, email: regEmail, password: regPassword, address: regAddress });
@@ -116,7 +118,7 @@ export function ClientLogin() {
             <TextInput value={regName} onChangeText={setRegName} placeholder="Seu nome" style={inputStyle} />
 
             <Text style={{ ...labelStyle, marginTop: 14 }}>Telefone / WhatsApp</Text>
-            <TextInput value={regPhone} onChangeText={setRegPhone} placeholder="(11) 99999-9999" style={inputStyle} inputMode="tel" />
+            <TextInput value={regPhone} onChangeText={v => setRegPhone(maskPhone(v))} placeholder="(11) 99999-9999" style={inputStyle} inputMode="tel" />
 
             <Text style={{ ...labelStyle, marginTop: 14 }}>E-mail</Text>
             <TextInput value={regEmail} onChangeText={setRegEmail} placeholder="seu@email.com" style={inputStyle} autoCapitalize="none" keyboardType="email-address" />

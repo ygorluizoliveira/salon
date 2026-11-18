@@ -7,7 +7,7 @@ import { useAppointments, useAppointmentsForMonth, useAllClients, useAddAppointm
 import type { Appointment } from '../lib/types';
 import { useServiceCategories } from '../lib/hooks/useServiceCategories';
 import { addClient } from '../lib/hooks/useClients';
-import { todayLocalISO, formatTime } from '../lib/utils';
+import { todayLocalISO, formatTime, maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
 
 const MIN_CANCEL_DAYS = 5;
 const MIN_BOOK_DAYS = 5;
@@ -500,7 +500,7 @@ export const Agenda: React.FC = () => {
                             />
                             <TextInput
                               value={newClientPhone}
-                              onChangeText={setNewClientPhone}
+                              onChangeText={v => setNewClientPhone(maskPhone(v))}
                               placeholder="Telefone (opcional)"
                               placeholderTextColor="#625d6766"
                               className="bg-[#e8e0ec] rounded-xl px-3 py-2 text-[#35313a] text-sm mb-3"
@@ -516,6 +516,7 @@ export const Agenda: React.FC = () => {
                                 onPress={async () => {
                                   const name = clientSearch.trim();
                                   if (!name) return;
+                                  if (newClientPhone.trim() && !isValidPhone(newClientPhone)) { Alert.alert('Erro', PHONE_ERROR); return; }
                                   try {
                                     const created = await addClient({ name, phone: newClientPhone.trim() || null });
                                     setSelectedClient(created);

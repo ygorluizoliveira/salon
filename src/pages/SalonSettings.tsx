@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { Check, X, Store, Phone, Mail, MapPin, Instagram, MessageCircle } from 'lucide-react-native';
 import { MotiView } from 'moti';
@@ -39,6 +40,9 @@ export const SalonSettings: React.FC = () => {
 
   async function handleSave() {
     if (!form.salon_name.trim()) { setSaveError('Nome do salão é obrigatório.'); return; }
+    for (const k of ['phone', 'whatsapp'] as const) {
+      if (form[k].trim() && !isValidPhone(form[k])) { setSaveError(PHONE_ERROR); return; }
+    }
     setSaving(true);
     setSaveError(null);
     try {
@@ -93,7 +97,7 @@ export const SalonSettings: React.FC = () => {
                     <f.icon size={16} color="#68597a99" />
                     <TextInput
                       value={form[f.key]}
-                      onChangeText={v => setForm(prev => ({ ...prev, [f.key]: v }))}
+                      onChangeText={v => setForm(prev => ({ ...prev, [f.key]: f.keyboard === 'phone-pad' ? maskPhone(v) : v }))}
                       placeholder={f.placeholder}
                       placeholderTextColor="#625d6766"
                       keyboardType={f.keyboard ?? 'default'}

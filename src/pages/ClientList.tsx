@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
 import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, Modal } from 'react-native';
 import { Search, UserPlus, X, Check, Phone, ChevronRight } from 'lucide-react-native';
 import { MotiView } from 'moti';
@@ -54,6 +55,7 @@ export const ClientList: React.FC = () => {
 
   async function handleAdd() {
     if (!newName.trim()) { setAddError('Informe o nome do cliente.'); return; }
+    if (newPhone.trim() && !isValidPhone(newPhone)) { setAddError(PHONE_ERROR); return; }
     setAddLoading(true);
     setAddError(null);
     try {
@@ -250,11 +252,7 @@ export const ClientList: React.FC = () => {
                 <TextInput
                   value={newPhone}
                   onChangeText={v => {
-                    const d = v.replace(/\D/g, '').slice(0, 11);
-                    let masked = d;
-                    if (d.length > 2) masked = `(${d.slice(0,2)}) ${d.slice(2)}`;
-                    if (d.length > 7) masked = `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
-                    setNewPhone(masked);
+                    setNewPhone(maskPhone(v));
                   }}
                   placeholder="(11) 99999-9999" placeholderTextColor="#625d6766"
                   keyboardType="phone-pad"

@@ -9,7 +9,7 @@ import { useServiceHistory } from '../lib/hooks/useServiceHistory';
 import { uploadAvatarFile } from '../lib/avatarUpload';
 import type { ClientStatus } from '../lib/types';
 import { navigationRef } from '../lib/navigationRef';
-import { parseLocalDate } from '../lib/utils';
+import { parseLocalDate, maskPhone, isValidPhone, PHONE_ERROR } from '../lib/utils';
 import { InviteClientModal } from '../components/InviteClientModal';
 
 const STATUSES: ClientStatus[] = ['Ativo', 'Inativo'];
@@ -101,6 +101,7 @@ export const ClientProfile: React.FC = () => {
 
   async function handleSave() {
     if (!form.name.trim()) { setSaveError('Nome é obrigatório.'); return; }
+    if (form.phone.trim() && !isValidPhone(form.phone)) { setSaveError(PHONE_ERROR); return; }
     const birthErr = validateBirthDate(form.birth_date);
     if (birthErr) { setSaveError(birthErr); return; }
     setSaving(true);
@@ -227,12 +228,7 @@ export const ClientProfile: React.FC = () => {
                     <Text className="text-[10px] font-bold text-[#625d67] mb-2 ml-1 uppercase tracking-wider">Telefone (com DDD)</Text>
                     <TextInput value={form.phone}
                       onChangeText={v => {
-                        // Mask: (XX) XXXXX-XXXX
-                        const d = v.replace(/\D/g, '').slice(0, 11);
-                        let masked = d;
-                        if (d.length > 2)  masked = `(${d.slice(0,2)}) ${d.slice(2)}`;
-                        if (d.length > 7)  masked = `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
-                        setForm(f => ({ ...f, phone: masked }));
+                        setForm(f => ({ ...f, phone: maskPhone(v) }));
                       }}
                       placeholder="(11) 99999-9999" placeholderTextColor="#625d6766"
                       keyboardType="phone-pad"
