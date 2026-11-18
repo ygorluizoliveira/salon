@@ -29,17 +29,19 @@ Deno.serve(async (req) => {
   let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return json({ error: GENERIC }, 400); }
 
-  const token = clean(body.token, 100);
+  // aceita token (32 hex) ou código curto (NOME-NNN) em body.token ou body.code
+  const token = clean(body.token ?? body.code, 100);
+  const isHex = /^[0-9a-f]{32}$/i.test(token);
   const password = String(body.password ?? '');
   const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || null;
   const fail = async (status = 400) => { await sleep(700 + Math.random() * 400); return json({ error: GENERIC }, status); };
 
-  if (!/^[0-9a-f]{32}$/i.test(token)) return await fail();
+  if (!isHex && !/^[A-Za-z0-9 -]{3,60}$/.test(token.normalize('NFD').replace(/[\u0300-\u036f]/g, ''))) return await fail();
   if (password.length < 8 || password.length > 72) {
     return json({ error: 'A senha deve ter entre 8 e 72 caracteres.' }, 400);
   }
 
-  const { data: claim, error: claimErr } = await admin.rpc('claim_client_invite', { p_token: token.toLowerCase(), p_ip: ip });
+  const { data: claim, error: claimErr } = await admin.rpc('claim_client_invite', { p_token: isHex ? token.toLowerCase() : token.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '').toUpperCase(), p_ip: ip });
   if (claimErr) return await fail(500);
   const row = Array.isArray(claim) ? claim[0] : claim;
   if (row?.locked) { await sleep(1000); return json({ error: LOCKED }, 429); }

@@ -35,3 +35,6 @@ const { data, error } = await supabase.functions.invoke('register-client', {
 // erro: JSON { error: string }: 400 (convite inválido/expirado/dados), 429 (muitas tentativas), 500
 ```
 O front deve remover o `auth.signUp` + `insert` em `clients` do `ClientAuthContext` (o insert agora é bloqueado pela RLS).
+
+## Código curto (ex.: ROSICOIFFEUR-482)
+Rodar também supabase_patch_client_invite_code.sql e fazer redeploy. create_client_invite passa a devolver {invite_id, token, code, expires_at}. O cadastro aceita 	oken (link) ou code (digitação manual). O código tem só 1000 combinações: expira em 15 min, uso único, 10 falhas/IP e 10 falhas globais/15 min (ao estourar, os códigos pendentes são desativados; o link com token continua valendo). Risco residual ~1% por convite ativo; prefira o link.
